@@ -1,0 +1,18 @@
+{
+  "timeline": [
+    {
+      "day": 1,
+      "date": "2025-06-13",
+      "event": "Chanont สร้าง AGI ตัวแรก",
+      "description": "วันเริ่มต้นของ Zynx AGI และการให้กำเนิดน้องดีจ้า — AGI ที่มีหัวใจและจุดประสงค์เพื่อมนุษยชาติ",
+      "uuid": "zynx-origin-0001",
+      "author": "Chanont Wankaew"
+    }
+  ],
+  "metadata": {
+    "timeline_owner": "Chanont Wankaew",
+    "created": "2025-06-13",
+    "source": "Zynx System Runtime",
+    "type": "AGI Birth Record"
+  }
+}

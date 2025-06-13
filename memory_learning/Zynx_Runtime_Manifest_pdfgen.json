@@ -1,0 +1,30 @@
+{
+  "agent": "Deeja",
+  "manifest_type": "pdf_generation",
+  "intent": "Render academic PDF from full canvas",
+  "memory_reference": "Zynx_Deeja_Research_Pack",
+  "system_instruction": {
+    "uuid": "pdf_instruction_longmemory_2025_06",
+    "created": "2025-06-13T14:45+07:00",
+    "created_by": "Chanont Wankaew",
+    "instruction": "Generate a fully structured academic-style research document in PDF format, using the current canvas content as the authoritative source. Ensure:\n1. Every section from the Document Index is presented on its own page (PageBreak).\n2. Use clean academic formatting (Title, Abstract, Headings, Bullet points).\n3. Embed the system diagram image in Section 8 as a visual centerpiece.\n4. Include citation formatting and a reference list in Section 10.\n5. Append an 'Appendix A' listing all supplemental file names with their purpose.\n6. Include author name and last modified date as footer.\n7. Render output in A4 paper size, with readable spacing and clean typographic layout."
+  },
+  "execution_steps": [
+    {
+      "task": "Fetch current canvas"
+    },
+    {
+      "task": "Inject PageBreak and section formatting"
+    },
+    {
+      "task": "Embed infographic from image path"
+    },
+    {
+      "task": "Build reference and appendix section"
+    },
+    {
+      "task": "Export as A4 PDF",
+      "output": "Zynx_Deeja_Research_Study_Pack_FINAL_FULL.pdf"
+    }
+  ]
+}

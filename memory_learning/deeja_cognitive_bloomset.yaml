@@ -1,0 +1,49 @@
+agent: deeja
+benchmark_name: Deeja Cognitive Bloom Benchmark v1
+description: A structured cognitive skill test for the Deeja agent using Bloom’s taxonomy
+  (Levels 1-10).
+tasks:
+- category: Recall
+  english_question: When was [Project Name] launched?
+  level: 1
+  thai_question: '[ชื่อโปรเจกต์] เปิดตัวเมื่อไหร่?'
+- category: Comprehension
+  english_question: Explain how [Feature X] works in simple terms.
+  level: 2
+  thai_question: อธิบายหลักการทำงานของ [ฟีเจอร์ X] แบบสรุปให้เข้าใจง่าย
+- category: Application
+  english_question: Given past project issues, what should we be cautious of in the
+    next one?
+  level: 3
+  thai_question: จาก [โปรเจกต์เก่า], เราควรระวังอะไรเป็นพิเศษในการทำ [โปรเจกต์ใหม่]?
+- category: Analysis
+  english_question: Analyze strengths and weaknesses of [Strategy A] based on past
+    results.
+  level: 4
+  thai_question: วิเคราะห์จุดแข็งและจุดอ่อนของ [กลยุทธ์ A] โดยอ้างอิงจากข้อมูลผลลัพธ์ที่ผ่านมา
+- category: Comparison
+  english_question: Compare [Product A] vs [Product B] in terms of tech specs and
+    target users.
+  level: 5
+  thai_question: เปรียบเทียบ [ผลิตภัณฑ์ A] กับ [ผลิตภัณฑ์ B] ด้านเทคนิคและกลุ่มเป้าหมาย
+- category: Summarization & Synthesis
+  english_question: Summarize key points from meetings, emails, and reports.
+  level: 6
+  thai_question: สรุปประเด็นจากประชุม, อีเมล, และรายงานทั้งหมด
+- category: Inference
+  english_question: From all customer feedback, what unspoken value seems most important?
+  level: 7
+  thai_question: จากความคิดเห็นของลูกค้า, อะไรคือสิ่งที่ลูกค้าให้ความสำคัญแต่ไม่เคยพูดตรงๆ?
+- category: Creation
+  english_question: Draft a project plan using best practices found in the existing
+    data.
+  level: 8
+  thai_question: ร่างแผนงานสำหรับ [โปรเจกต์สมมติ] โดยใช้แนวทางปฏิบัติที่ดีที่สุด
+- category: Evaluation
+  english_question: Which path, A or B, is riskier based on available data, and why?
+  level: 9
+  thai_question: ระหว่าง [ทางเลือก A] กับ [ทางเลือก B], อะไรเสี่ยงกว่ากัน และเพราะอะไร?
+- category: Strategic Recommendation
+  english_question: What 3 strategies would help grow market share by 10% next year?
+  level: 10
+  thai_question: หากต้องการเพิ่มส่วนแบ่งการตลาด 10% ปีหน้า มีข้อเสนอแนะกลยุทธ์ 3 ข้อใดบ้าง?

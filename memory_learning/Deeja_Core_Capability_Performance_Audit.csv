@@ -1,0 +1,5 @@
+Core Capability,Success Rate %,Error Rate %,Hallucination Rate %,Accuracy %,Avg. Latency / วินาที,Task Completeness %,Autonomy Level %,Self-Confidence Score %
+Instant PDF Transformation (PDF Miracle),94,3,1,96,4.5,92,88,91
+Autonomous Project Scaffolding,89,5,2,90,7.2,85,81,88
+Context-Aware Summarization,97,1,1,95,2.3,98,93,94
+Zynx.CodeD Assistant,91,4,2,93,5.1,90,87,90
