@@ -43,7 +43,7 @@ ENV/
 **/credentials.json
 **/*_keys.json
 **/*_secret.json
-
+memory_learning/Chat_Analysis_Zynx.json
 # Postman Collections
 **/*.postman_collection.json
 **/*.postman_environment.json
@@ -69,3 +69,4 @@ yarn-error.log*
 # System Files
 .DS_Store
 Thumbs.db 
+
