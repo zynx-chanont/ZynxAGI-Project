@@ -419,7 +419,7 @@ class ThaiCulturalEngine:
         
         return text
 
-    async def process_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, message: Dict[str, Any]) -> Dict[str, Any]: # Renamed from process_message
         """Process a message with Thai cultural context"""
         text = message.get("text", "")
         context_type = message.get("context_type", "formal")
