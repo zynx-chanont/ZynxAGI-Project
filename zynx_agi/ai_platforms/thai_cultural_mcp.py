@@ -1,5 +1,5 @@
 from typing import Dict, Any, List, Optional
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Form
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import jwt
@@ -60,13 +60,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
-    except jwt.JWTError:
+    except jwt.exceptions.PyJWTError: # Corrected exception type
         raise credentials_exception
     return token_data
 
 # MCP Endpoints
 @app.post("/token")
-async def login_for_access_token(username: str, password: str):
+async def login_for_access_token(username: str = Form(...), password: str = Form(...)): # Added Form(...)
     # In a real application, validate against a database
     if username != "admin" or password != "password":
         raise HTTPException(
@@ -120,28 +120,31 @@ async def adjust_cultural_context(
         raise HTTPException(status_code=500, detail=str(e))
 
 # MCP Resource endpoints
-@app.get("/api/v1/cultural/resources")
+@app.get("/api/v1/cultural/resources", response_model=List[Dict[str, Any]])
 async def get_cultural_resources(
     current_user: TokenData = Depends(get_current_user)
 ):
     """Get available cultural resources"""
-    return {
-        "patterns": cultural_engine.cultural_patterns,
-        "formal_patterns": cultural_engine.formal_patterns,
-        "polite_particles": cultural_engine.polite_particles
-    }
+    # Returning a list of dictionaries for more structured data
+    resources = [
+        {"type": "cultural_patterns", "data": cultural_engine.cultural_patterns},
+        {"type": "formal_patterns", "data": cultural_engine.formal_patterns},
+        {"type": "polite_particles", "data": cultural_engine.polite_particles}
+    ]
+    return resources
 
 # MCP Prompt endpoints
-@app.get("/api/v1/cultural/prompts")
+@app.get("/api/v1/cultural/prompts", response_model=List[str])
 async def get_cultural_prompts(
     current_user: TokenData = Depends(get_current_user)
 ):
     """Get available cultural prompts"""
-    return {
-        "analyze": "วิเคราะห์บริบททางวัฒนธรรมของข้อความ",
-        "adjust": "ปรับแต่งข้อความให้เหมาะสมกับบริบททางวัฒนธรรม",
-        "suggest": "ให้คำแนะนำในการปรับปรุงการสื่อสารทางวัฒนธรรม"
-    }
+    prompts = [
+        "วิเคราะห์บริบททางวัฒนธรรมของข้อความ",
+        "ปรับแต่งข้อความให้เหมาะสมกับบริบททางวัฒนธรรม",
+        "ให้คำแนะนำในการปรับปรุงการสื่อสารทางวัฒนธรรม"
+    ]
+    return prompts
 
 if __name__ == "__main__":
     import uvicorn

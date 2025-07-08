@@ -1,10 +1,15 @@
 from typing import Dict, Any, Optional
-from ..config.settings import get_settings
+from ..config import settings # Import the settings instance directly
+from ..cultural.thai_cultural_engine import ThaiCulturalEngine # Import the engine
 
 class UniversalDispatcher:
     def __init__(self):
-        self.settings = get_settings()
+        self.settings = settings # Use the imported settings instance
         self._handlers: Dict[str, Any] = {}
+
+        # Instantiate and register ThaiCulturalEngine
+        self.thai_engine = ThaiCulturalEngine()
+        self.register_handler("cultural_analysis", self.thai_engine)
 
     def register_handler(self, handler_type: str, handler: Any) -> None:
         """Register a new handler for a specific type of message."""

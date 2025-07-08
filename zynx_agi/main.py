@@ -29,7 +29,7 @@ app.add_middleware(
 
 # --- SERVE REACT APP ---
 # Mount the React frontend static files
-app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
+# app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static") # Temporarily commented out for testing
 
 @app.get("/")
 async def root():
