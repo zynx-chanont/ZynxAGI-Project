@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "zynx-agi-secret-key-development"  # This should be overridden in production
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
+    # LLM Gateway Settings
+    ZYNX_LLM_PROVIDER: str = "openai"  # Default provider: "openai", "zynx_local", "claude"
+    ZYNX_LOCAL_API_URL: Optional[str] = None
+    HMAC_PSEUDONYM_KEY: str = "zynx-pseudonym-key-development"  # Should be overridden in production
+    RETENTION_PERIOD_DAYS: int = 90
+    CROSS_BORDER_COMPLIANCE: bool = True
+    
     # Cultural Intelligence
     CULTURAL_INTELLIGENCE_MODEL: str = "deeja-v1"
     THAI_CULTURAL_WEIGHT: float = 0.8

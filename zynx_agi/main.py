@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import logging
 from .config.settings import settings
+from .api.llm_gateway import router as llm_gateway_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,6 +27,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include LLM Gateway routes
+app.include_router(llm_gateway_router)
 
 # --- SERVE REACT APP ---
 # Mount the React frontend static files

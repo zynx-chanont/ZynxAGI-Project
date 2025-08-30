@@ -15,13 +15,22 @@ class OpenAIClient:
     """OpenAI client with cultural context integration and optimization"""
     
     def __init__(self):
-        self.settings = settings.ai
-        self.client = AsyncOpenAI(api_key=self.settings.OPENAI_API_KEY)
+        # Use direct settings access since there's no settings.ai structure
+        if not settings.OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY not configured")
+        
+        self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
         self.cultural_engine = ThaiCulturalEngine()
-        self.model = self.settings.OPENAI_MODEL
-        self.max_tokens = self.settings.OPENAI_MAX_TOKENS
-        self.temperature = self.settings.OPENAI_TEMPERATURE
-        self.encoding = tiktoken.encoding_for_model(self.model)
+        self.model = "gpt-3.5-turbo"  # Default model
+        self.max_tokens = 150  # Default max tokens
+        self.temperature = 0.7  # Default temperature
+        
+        try:
+            self.encoding = tiktoken.encoding_for_model(self.model)
+        except Exception:
+            # Fallback encoding if model not found
+            self.encoding = tiktoken.get_encoding("cl100k_base")
+            
         self._token_usage_stats = {
             "total_tokens": 0,
             "prompt_tokens": 0,
