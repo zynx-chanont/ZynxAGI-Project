@@ -14,6 +14,7 @@ Zynx AGI is an advanced AI platform created by Chanont Wankaew, focusing on offl
 - 🔄 **Offline Operation**: การทำงานแบบออฟไลน์
 - 📚 **RAG Integration**: การบูรณาการกับระบบ RAG
 - 📊 **Timeline Viewer**: ระบบแสดงไทม์ไลน์
+- 🛡️ **LLM Gateway**: ระบบประตูข้อมูล AI ที่ปลอดภัยพร้อมการตรวจสอบข้อมูลส่วนบุคคล
 
 ## โครงสร้างโปรเจค (Project Structure)
 
