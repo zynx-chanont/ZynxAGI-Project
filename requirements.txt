@@ -1,6 +1,7 @@
 fastapi>=0.68.0
 uvicorn>=0.15.0
 pydantic>=1.8.0
+pydantic-settings>=2.0.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 python-multipart>=0.0.5
@@ -25,6 +26,7 @@ matplotlib>=3.4.3
 seaborn>=0.11.2
 jupyter>=1.0.0
 ipykernel>=6.0.3
+openai>=1.0.0
 tqdm>=4.62.3
 pyyaml>=5.4.1
 pyjwt>=2.3.0
