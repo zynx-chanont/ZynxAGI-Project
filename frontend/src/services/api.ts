@@ -9,8 +9,10 @@ import type {
   EmotionalAnalysis 
 } from '../types/chat';
 
-// API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// API Configuration - Handle both Vite and Jest environments
+const API_BASE_URL = process.env.NODE_ENV === 'test' 
+  ? 'http://localhost:8000'
+  : 'http://localhost:8000'; // Default for now
 const API_VERSION = 'v1';
 
 // API Client Configuration

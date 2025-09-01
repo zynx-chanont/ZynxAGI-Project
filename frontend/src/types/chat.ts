@@ -1,8 +1,13 @@
 export type MessageRole = 'assistant' | 'user'
 
 export interface CulturalContext {
-  context: string
-  explanation: string
+  context?: string
+  explanation?: string
+  primaryCulture?: string
+  formalityLevel?: string
+  politenessLevel?: number
+  culturalMarkers?: string[]
+  communicationStyle?: string
 }
 
 export interface EmotionalIntelligence {
@@ -15,8 +20,11 @@ export interface Message {
   content: string
   role: MessageRole
   timestamp: Date
-  culturalContext: CulturalContext
-  emotionalIntelligence: EmotionalIntelligence
+  culturalContext?: CulturalContext
+  emotionalIntelligence?: EmotionalIntelligence
+  aiPlatform?: string
+  culturalScore?: number
+  emotionalScore?: number
 }
 
 export interface UseChatReturn {

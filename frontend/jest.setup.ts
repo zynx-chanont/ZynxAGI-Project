@@ -1,9 +1,16 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
+
+// Mock import.meta for tests
+(globalThis as any).importMeta = {
+  env: {
+    VITE_API_BASE_URL: 'http://localhost:8000'
+  }
+};
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -13,11 +20,11 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
   })),
-})
+});
 
 // Mock ResizeObserver
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
+(globalThis as any).ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
-})) 
+})); 

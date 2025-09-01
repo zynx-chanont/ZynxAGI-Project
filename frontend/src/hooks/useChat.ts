@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import type { Message, ChatRequest, ChatResponse, ChatError } from '../types/chat';
+import type { Message } from '../types/chat';
 import { chatService } from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -26,6 +26,10 @@ export const useChat = (): UseChatReturn => {
         politenessLevel: 0.8,
         culturalMarkers: ['ค่ะ', 'kreng_jai'],
         communicationStyle: 'warm_friendly'
+      },
+      emotionalIntelligence: {
+        sentiment: 'positive',
+        empathy: 0.9
       },
       aiPlatform: 'deeja',
       culturalScore: 0.95,
@@ -105,6 +109,10 @@ export const useChat = (): UseChatReturn => {
         content: response.data.message,
         timestamp: new Date(),
         culturalContext: response.data.culturalContext,
+        emotionalIntelligence: {
+          sentiment: 'positive',
+          empathy: response.data.emotionalIntelligenceScore
+        },
         aiPlatform: response.data.aiPlatform,
         culturalScore: response.data.culturalAccuracyScore,
         emotionalScore: response.data.emotionalIntelligenceScore
