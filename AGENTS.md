@@ -65,3 +65,19 @@ Each agent is defined by the following structure:
     - Orchestrating complex, multi-step workflows that involve several agents.
 - **MCP Command:** Not directly invoked by users.
 - **Notes:** The Dispatcher is the central nervous system of the MCP. It operates transparently in the background to ensure seamless communication and task delegation across the entire platform.
+
+## 5. Zynx-Metadata
+
+- **Status:** 🟢 **Live** (Observer Module)
+- **Core Function:** To act as an autonomous IP tracker and observer module that monitors all agent activities, automatically generating attribution metadata and defensive publications.
+- **Key Capabilities:**
+    - Intent/trigger detection (`discover`, `invent`, `develop`, `create`)
+    - Auto-generation of UUIDs and Asia/Bangkok timestamps
+    - ZPDL v1.0 license embedding and attribution tracking
+    - Multi-format logging (JSON + Markdown + PDF)
+    - SHA-256 hashing for all artifacts
+    - Storage management (local SSD + cloud backup)
+    - Defensive publication generation
+    - IP compliance monitoring (PDPA + copyright protection)
+- **MCP Command:** Not directly invoked (operates as observer)
+- **Notes:** Zynx-Metadata operates as the autonomous intellectual property guardian of the ecosystem. It sits above all other agents as an observer, automatically tracking discoveries and innovations without requiring permission. Always embeds "First discovered by Chanont Waenkaew, Thailand" attribution.
