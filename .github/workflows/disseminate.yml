@@ -1,0 +1,113 @@
+name: Disseminate IP Declaration
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_platforms:
+        description: 'Platforms to post to'
+        required: true
+        default: 'linkedin,twitter'
+        type: choice
+        options:
+        - linkedin
+        - twitter
+        - linkedin,twitter
+
+jobs:
+  disseminate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        npm install axios dotenv
+        
+    - name: Read POST_MASTER.md
+      id: read-post
+      run: |
+        CONTENT=$(cat POST_MASTER.md | head -500)
+        echo "CONTENT<<EOF" >> $GITHUB_OUTPUT
+        echo "$CONTENT" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+    - name: Post to LinkedIn
+      if: contains(github.event.inputs.target_platforms, 'linkedin')
+      env:
+        LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+        LINKEDIN_USER_ID: ${{ secrets.LINKEDIN_USER_ID }}
+      run: |
+        node -e "
+        const axios = require('axios');
+        const content = process.env.CONTENT || \`${{ steps.read-post.outputs.CONTENT }}\`;
+        const postData = {
+          author: \`urn:li:person:\${process.env.LINKEDIN_USER_ID}\`,
+          lifecycleState: 'PUBLISHED',
+          specificContent: {
+            'com.linkedin.ugc.ShareContent': {
+              shareCommentary: {
+                text: content.substring(0, 1300) + '... [Full post: https://github.com/zynx-chanont/ZynxAGI-Project]'
+              },
+              shareMediaCategory: 'NONE'
+            }
+          },
+          visibility: {
+            'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
+          }
+        };
+        
+        axios.post('https://api.linkedin.com/v2/ugcPosts', postData, {
+          headers: {
+            'Authorization': \`Bearer \${process.env.LINKEDIN_ACCESS_TOKEN}\`,
+            'Content-Type': 'application/json',
+            'X-Restli-Protocol-Version': '2.0.0'
+          }
+        }).then(response => {
+          console.log('✅ Posted to LinkedIn successfully');
+        }).catch(error => {
+          console.error('❌ LinkedIn posting failed:', error.response?.data || error.message);
+          process.exit(1);
+        });
+        "
+        
+    - name: Post to Twitter/X
+      if: contains(github.event.inputs.target_platforms, 'twitter')
+      env:
+        TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+        TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+        TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+        TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+      run: |
+        npm install twitter-api-v2
+        node -e "
+        const { TwitterApi } = require('twitter-api-v2');
+        const content = process.env.CONTENT || \`${{ steps.read-post.outputs.CONTENT }}\`;
+        
+        const client = new TwitterApi({
+          appKey: process.env.TWITTER_API_KEY,
+          appSecret: process.env.TWITTER_API_SECRET,
+          accessToken: process.env.TWITTER_ACCESS_TOKEN,
+          accessSecret: process.env.TWITTER_ACCESS_SECRET,
+        });
+        
+        const tweetText = content.substring(0, 250) + '... 🚀 #ZynxAGI #AaaP #AI #Thailand\\n\\nFull declaration: https://github.com/zynx-chanont/ZynxAGI-Project';
+        
+        client.v2.tweet(tweetText).then(response => {
+          console.log('✅ Posted to Twitter/X successfully');
+        }).catch(response => {
+          console.error('❌ Twitter posting failed:', error);
+          process.exit(1);
+        });
+        "
+        
+    - name: Summary
+      run: |
+        echo "🎯 IP Declaration disseminated to: ${{ github.event.inputs.target_platforms }}"
+        echo "📄 Source: POST_MASTER.md"
+        echo "🔗 Repository: https://github.com/zynx-chanont/ZynxAGI-Project"

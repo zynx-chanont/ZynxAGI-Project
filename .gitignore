@@ -24,6 +24,7 @@ wheels/
 venv/
 .venv/
 ENV/
+env/
 
 # IDE
 .idea/
@@ -44,6 +45,7 @@ ENV/
 **/*_keys.json
 **/*_secret.json
 memory_learning/Chat_Analysis_Zynx.json
+
 # Postman Collections
 **/*.postman_collection.json
 **/*.postman_environment.json
@@ -59,6 +61,7 @@ frontend/dist/
 frontend/.env
 frontend/.env.local
 frontend/.env.*.local
+node_modules/
 
 # Logs
 *.log
@@ -68,5 +71,24 @@ yarn-error.log*
 
 # System Files
 .DS_Store
-Thumbs.db 
+Thumbs.db
+desktop.ini
 
+# Docker
+docker-compose.override.yml
+
+# Database
+*.db
+*.sqlite3
+
+# Temporary files
+/tmp/
+.tmp/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# MinIO data
+minio-data/
