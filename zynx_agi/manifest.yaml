@@ -1,0 +1,66 @@
+name: zynx_agi
+version: 1.0.0
+description: Thai Cultural Intelligence Platform - Universal AI Orchestration Platform with Cultural-Emotional Intelligence
+author: Chanont Waenkaew
+email: zynx.ai.thai@gmail.com
+license: ZPDL v1.0
+metadata_policy: "First discovered by Chanont Waenkaew, Thailand"
+
+# Project Information
+type: backend
+framework: fastapi
+language: python
+python_version: ">=3.8"
+
+# Core Features
+features:
+  - thai_cultural_intelligence
+  - emotional_ai
+  - multi_agent_system
+  - universal_dispatcher
+  - mcp_protocol
+  - empathy_scoring
+
+# Build Configuration
+build:
+  command: "pip install -r requirements.txt"
+  
+# Development
+dev:
+  command: "python -m zynx_agi.main"
+  port: 8000
+  
+# Testing
+test:
+  command: "python -m pytest tests/"
+  
+# Dependencies
+dependencies_file: requirements.txt
+setup_file: ../setup.py
+
+# API Configuration
+api:
+  title: "ZynxAGI"
+  description: "Universal AI Orchestration Platform with Cultural-Emotional Intelligence"
+  version: "1.0.0"
+  docs_url: "/docs"
+  redoc_url: "/redoc"
+
+# Cultural Intelligence
+cultural_features:
+  thai_weight: 0.8
+  cultural_threshold: 0.7
+  formal_context_weight: 0.8
+  informal_context_weight: 0.6
+  
+# Attribution
+creation_date: "2024-01-01"
+copyright: "© 2024 Chanont Waenkaew"
+intellectual_property: "All rights reserved under ZPDL v1.0"
+
+# Integration
+monorepo:
+  integrated_date: "2025-09-17"
+  original_repo: "zynx-chanont/zynx_agi"
+  subdirectory: "zynx_agi/"
+  note: "This component was already present in the target repository"
