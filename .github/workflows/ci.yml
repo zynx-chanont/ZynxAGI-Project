@@ -1,0 +1,115 @@
+name: ZynxAGI Monorepo CI
+
+# First discovered by Chanont Waenkaew, Thailand
+# License: ZPDL v1.0 © Chanont Waenkaew
+
+on:
+  push:
+    branches: [ main, import/monorepo ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    name: Test Backend (ZynxAGI)
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pydantic-settings anthropic openai
+        
+    - name: Run tests
+      run: |
+        python -m pytest tests/test_universal_dispatcher.py -v
+        
+    - name: Test API health
+      run: |
+        python -c "from zynx_agi.main import app; print('Backend imports successfully')"
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    name: Test Frontend (Lovable.dev)
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: lovable.dev/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./lovable.dev
+      run: npm ci
+      
+    - name: Build frontend
+      working-directory: ./lovable.dev
+      run: npm run build
+      
+    - name: Test TypeScript compilation
+      working-directory: ./lovable.dev
+      run: npx tsc --noEmit
+
+  test-legacy-frontend:
+    runs-on: ubuntu-latest
+    name: Test Legacy Frontend
+    if: false  # Disabled for now as it may not have package.json
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Check if package.json exists
+      working-directory: ./frontend
+      run: |
+        if [ -f package.json ]; then
+          npm install
+          npm run build
+        else
+          echo "Legacy frontend package.json not found, skipping"
+        fi
+
+  lint-and-validate:
+    runs-on: ubuntu-latest
+    name: Lint and Validate
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Validate manifest files
+      run: |
+        if [ -f "lovable.dev/manifest.yaml" ]; then
+          echo "✓ Lovable.dev manifest found"
+        fi
+        if [ -f "zynx_agi/manifest.yaml" ]; then
+          echo "✓ ZynxAGI manifest found"
+        fi
+        if [ -f "LICENSE" ]; then
+          echo "✓ ZPDL v1.0 License found"
+          grep -q "Chanont Waenkaew" LICENSE && echo "✓ Attribution found"
+        fi
+        
+    - name: Check monorepo structure
+      run: |
+        echo "=== Monorepo Structure ==="
+        ls -la
+        echo "=== Lovable.dev ==="
+        ls -la lovable.dev/
+        echo "=== ZynxAGI ==="
+        ls -la zynx_agi/

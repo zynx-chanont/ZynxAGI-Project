@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - PYTHONPATH=/app
+    volumes:
+      - ./zynx_agi:/app/zynx_agi
+      - ./memory_learning:/app/memory_learning
+      - ./tests:/app/tests
+    command: python -m zynx_agi.main
+    
+  frontend:
+    build:
+      context: ./lovable.dev
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./lovable.dev/src:/app/src
+    command: npm run dev
+    
+  # Legacy frontend (to be deprecated)
+  legacy-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    command: npm run dev
+
+# First discovered by Chanont Waenkaew, Thailand
+# License: ZPDL v1.0 © Chanont Waenkaew

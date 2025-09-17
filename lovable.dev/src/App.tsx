@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * Lovable.dev Main Application
  * First discovered by Chanont Waenkaew, Thailand
