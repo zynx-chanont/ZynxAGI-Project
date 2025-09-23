@@ -33,15 +33,18 @@ Each agent is defined by the following structure:
 
 ## 2. CodeD
 
-- **Status:** 🟡 **Planned**
+- **Status:** 🟢 **Live**
 - **Core Function:** To act as a specialized coding assistant for generating, analyzing, and debugging code.
 - **Key Capabilities:**
     - Code generation from natural language prompts.
     - Error analysis and debugging suggestions.
     - Creation of technical documentation and docstrings.
     - Optimizing code for performance and readability.
+    - Code review and refactoring suggestions.
+    - Security analysis and performance analysis.
+    - Unit test generation.
 - **MCP Command:** `/coded`
-- **Notes:** CodeD is designed to streamline the development workflow for both internal Zynx developers and external users on the AaaP platform.
+- **Notes:** CodeD is designed to streamline the development workflow for both internal Zynx developers and external users on the AaaP platform. Now fully integrated with the MCP system and available through the chat interface.
 
 ## 3. Verifier
 
