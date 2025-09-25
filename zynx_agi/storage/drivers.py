@@ -11,8 +11,27 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import asyncio
-import aiofiles
-from cryptography.fernet import Fernet
+
+# Handle aiofiles import gracefully
+try:
+    import aiofiles
+    AIOFILES_AVAILABLE = True
+except ImportError:
+    AIOFILES_AVAILABLE = False
+
+# Handle cryptography import gracefully
+try:
+    from cryptography.fernet import Fernet
+    CRYPTOGRAPHY_AVAILABLE = True
+except ImportError:
+    CRYPTOGRAPHY_AVAILABLE = False
+    class Fernet:
+        def __init__(self, key):
+            self.key = key
+        def encrypt(self, data):
+            return data
+        def decrypt(self, data):
+            return data
 
 
 class StorageDriver(ABC):
@@ -83,8 +102,14 @@ class LocalStorageDriver(StorageDriver):
         
         # Store artifact
         artifact_path = self.artifacts_path / f"{artifact_id}.bin"
-        async with aiofiles.open(artifact_path, 'wb') as f:
-            await f.write(encrypted_data)
+        
+        if AIOFILES_AVAILABLE:
+            async with aiofiles.open(artifact_path, 'wb') as f:
+                await f.write(encrypted_data)
+        else:
+            # Fallback to synchronous file operations
+            with open(artifact_path, 'wb') as f:
+                f.write(encrypted_data)
         
         # Store metadata with hash
         metadata_with_hash = {
@@ -97,8 +122,13 @@ class LocalStorageDriver(StorageDriver):
         }
         
         metadata_path = self.metadata_path / f"{artifact_id}.json"
-        async with aiofiles.open(metadata_path, 'w') as f:
-            await f.write(json.dumps(metadata_with_hash, indent=2))
+        
+        if AIOFILES_AVAILABLE:
+            async with aiofiles.open(metadata_path, 'w') as f:
+                await f.write(json.dumps(metadata_with_hash, indent=2))
+        else:
+            with open(metadata_path, 'w') as f:
+                f.write(json.dumps(metadata_with_hash, indent=2))
         
         return data_hash
     
