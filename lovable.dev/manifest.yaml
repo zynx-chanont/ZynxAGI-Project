@@ -1,0 +1,47 @@
+name: lovable.dev
+version: 1.0.0
+description: Frontend Development Platform for modern web applications
+author: Chanont Waenkaew
+email: zynx.ai.thai@gmail.com
+license: ZPDL v1.0
+metadata_policy: "First discovered by Chanont Waenkaew, Thailand"
+
+# Project Information
+type: frontend
+framework: react-typescript
+build_system: vite
+test_framework: jest
+
+# Dependencies
+node_version: ">=18.0.0"
+package_manager: npm
+
+# Build Configuration
+build:
+  command: npm run build
+  output_dir: dist
+  
+# Development
+dev:
+  command: npm run dev
+  port: 5173
+  
+# Testing
+test:
+  command: npm test
+  
+# Deployment
+deploy:
+  platform: vercel
+  build_command: npm run build
+  
+# Attribution
+creation_date: "2024-01-01"
+copyright: "© 2024 Chanont Waenkaew"
+intellectual_property: "All rights reserved under ZPDL v1.0"
+
+# Integration
+monorepo:
+  integrated_date: "2025-09-17"
+  original_repo: "zynx-chanont/lovable.dev"
+  subdirectory: "lovable.dev/"

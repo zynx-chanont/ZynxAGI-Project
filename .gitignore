@@ -53,12 +53,26 @@ memory_learning/Chat_Analysis_Zynx.json
 **/*.xlsx
 **/*.xls
 
-# Frontend
+# Frontend - Node.js
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+
+# Frontend - Legacy
 frontend/node_modules/
 frontend/dist/
 frontend/.env
 frontend/.env.local
 frontend/.env.*.local
+
+# Frontend - Lovable.dev
+lovable.dev/node_modules/
+lovable.dev/dist/
+lovable.dev/.env
+lovable.dev/.env.local
+lovable.dev/.env.*.local
 
 # Logs
 *.log
