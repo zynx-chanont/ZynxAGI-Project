@@ -1,97 +1,61 @@
-# Zynx AGI - Universal AI Orchestration Platform
+# Zynx AGI Core Foundation
 
-## ภาพรวม (Overview)
+**Zynx AGI** is an empathy-first AI platform focused on Thai cultural intelligence and emotional understanding. This repository contains the core foundation with IP provenance tracking, database schema, LLM proxy, and automation infrastructure.
 
-Zynx AGI เป็นแพลตฟอร์ม AI ขั้นสูงที่สร้างขึ้นโดย Chanont Wankaew โดยเน้นที่ความสามารถในการทำงานแบบออฟไลน์ ความฉลาดทางวัฒนธรรม และการบูรณาการอารมณ์ ระบบนี้เป็น AGI แบบโมดูลาร์ที่ขับเคลื่อนด้วยพรอมต์ ซึ่งออกแบบมาเพื่อรันเครือข่ายของเอเจนต์อัจฉริยะ
+## Quick Start
 
-Zynx AGI is an advanced AI platform created by Chanont Wankaew, focusing on offline capabilities, cultural intelligence, and emotional integration. The system is a prompt-driven modular AGI designed to run a network of intelligent agents.
+1. **Clone and setup environment:**
+   ```bash
+   git clone https://github.com/zynx-chanont/ZynxAGI-Project.git
+   cd ZynxAGI-Project
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
-## คุณสมบัติหลัก (Key Features)
+2. **Build and run with Docker:**
+   ```bash
+   make build
+   make up
+   make migrate
+   ```
 
-- 🤖 **Avatar Deeja**: ตัวแทน AI ที่มีความฉลาดทางอารมณ์
-- 🌐 **Universal Message Dispatcher**: ระบบจัดการข้อความแบบสากล
-- 🎯 **Cultural Context Engine**: เครื่องยนต์ความฉลาดทางวัฒนธรรม
-- 🔄 **Offline Operation**: การทำงานแบบออฟไลน์
-- 📚 **RAG Integration**: การบูรณาการกับระบบ RAG
-- 📊 **Timeline Viewer**: ระบบแสดงไทม์ไลน์
+3. **Test the API:**
+   ```bash
+   curl http://localhost:8000/health
+   curl http://localhost:8000/api/v1/llm/ping
+   ```
 
-## โครงสร้างโปรเจค (Project Structure)
+## Core Components
+
+- **FastAPI Application**: Modern async web framework
+- **PostgreSQL + Alembic**: Database with migration support  
+- **MinIO**: S3-compatible object storage for artifacts
+- **Redis**: Caching and session management
+- **LLM Proxy**: Unified interface for OpenAI, Claude, Ollama
+- **IP Provenance**: ZPDL metadata tracking with SHA256 hashing
+
+## Architecture
 
 ```
-Zynx_AGI_Claude/
-├── frontend/               # React + TypeScript frontend
-├── zynx_agi/              # Python backend
-│   ├── api/               # API endpoints
-│   ├── core/              # Core functionality
-│   ├── cultural/          # Cultural intelligence
-│   ├── models/            # Data models
-│   ├── security/          # Security features
-│   └── ai_platforms/      # AI platform integrations
-├── memory_learning/       # Memory and learning systems
-├── tests/                 # Test suite
-└── Doc/                   # Documentation
+app/
+├── Dockerfile              # Application container
+├── requirements.txt        # Python dependencies  
+├── alembic.ini            # Database migration config
+├── alembic/               # Migration scripts
+│   ├── env.py
+│   └── versions/
+└── app/                   # Application code
+    ├── main.py            # FastAPI entry point
+    ├── models.py          # SQLAlchemy models
+    ├── core/              # Core utilities
+    ├── services/          # Business logic
+    └── api/v1/            # API endpoints
 ```
 
-## การติดตั้ง (Installation)
+## Development
 
-### Backend Setup
-
-```bash
-# Create virtual environment
-python -m venv .venv
-.\.venv\Scripts\activate
-
-# Install dependencies
-pip install -e .
-```
-
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## การใช้งาน (Usage)
-
-1. Start the backend server:
-```bash
-python -m zynx_agi.main
-```
-
-2. Start the frontend development server:
-```bash
-cd frontend
-npm run dev
-```
-
-3. Access the application:
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
-
-## แผนงาน (Roadmap)
-
-### Phase 1: การเตรียมการเปิดตัว
-- [ ] ปรับปรุง UI/UX
-- [ ] เพิ่มระบบ RAG
-- [ ] สร้าง Timeline Viewer
-
-### Phase 2: การเปิดตัวและขยายตลาด
-- [ ] จัดงานเปิดตัว
-- [ ] กิจกรรมประชาสัมพันธ์
-- [ ] การขยายฐานผู้ใช้
-
-### Phase 3: การพัฒนาอย่างต่อเนื่อง
-- [ ] เพิ่มคุณสมบัติใหม่
-- [ ] ปรับปรุงประสิทธิภาพ
-- [ ] ขยายความสามารถทางวัฒนธรรม
-
-## ผู้พัฒนา (Developer)
-
-- **Chanont Wankaew** - ผู้สร้างและพัฒนา Zynx AGI
+See [README.run.md](README.run.md) for detailed development commands and deployment instructions.
 
 ## License
 
-MIT License - See LICENSE file for details 
+© 2025 Chanont Wankaew. All rights reserved. | AaaP™ & Zynx AGI 
