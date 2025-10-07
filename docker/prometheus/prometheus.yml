@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'zynx-agi'
+    static_configs:
+      - targets: ['zynx-app:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s

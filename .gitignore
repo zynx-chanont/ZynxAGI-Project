@@ -68,5 +68,11 @@ yarn-error.log*
 
 # System Files
 .DS_Store
-Thumbs.db 
+Thumbs.db
 
+# ZynxAGI specific
+data/
+tmp/
+ecosystem_migration_report.json
+*.worm
+*.meta.json

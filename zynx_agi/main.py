@@ -4,6 +4,9 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import logging
 from .config.settings import settings
+from .modules import ZynxCore, DeejaAgent, ZynxMetadata
+from .storage import ZynxStorage
+from .local_llm import LocalLLMFallback
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -17,6 +20,13 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Initialize ZPDL v1.0 compliant modules
+zynx_core = ZynxCore()
+deeja_agent = DeejaAgent()
+zynx_metadata = ZynxMetadata()
+zynx_storage = ZynxStorage()
+local_llm_fallback = LocalLLMFallback()
 
 # CORS middleware
 app.add_middleware(
@@ -49,78 +59,103 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint with ZPDL v1.0 attribution"""
     try:
+        # Initialize modules if needed
+        await zynx_core.initialize()
+        
         return {
             "status": "healthy",
             "app": "ZynxAGI",
             "version": "1.0.0",
+            "attribution": zynx_core.get_attribution(),
             "components": {
                 "api": "healthy",
                 "cultural_intelligence": "ready",
-                "universal_dispatcher": "ready"
+                "universal_dispatcher": "ready",
+                "zynx_core": zynx_core.get_status(),
+                "deeja_agent": deeja_agent.get_status(),
+                "metadata_system": zynx_metadata.get_status(),
+                "storage_system": zynx_storage.get_storage_stats(),
+                "local_llm_fallback": local_llm_fallback.get_status()
             },
             "message": "ZynxAGI is running successfully! 🌟",
-            "thai_message": "ระบบ ZynxAGI ทำงานปกติค่ะ! 🇹🇭"
+            "thai_message": "ระบบ ZynxAGI ทำงานปกติค่ะ! 🇹🇭",
+            "zpdl_compliance": "v1.0"
         }
     except Exception as e:
         logger.error(f"Error in health check: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-# Chat endpoint for testing
+# Chat endpoint with Deeja integration
 @app.post("/api/v1/chat/message")
 async def chat_message(request: dict):
-    """Chat endpoint for testing Frontend integration"""
+    """Chat endpoint with Deeja agent integration and fallback support"""
     try:
         message = request.get("message", "")
+        context = request.get("context", "casual")
         
-        # Detect Thai or English
-        is_thai = any(ord(char) >= 0x0E00 and ord(char) <= 0x0E7F for char in message)
-        
-        if "สวัสดี" in message or "hello" in message.lower() or "hi" in message.lower():
-            if is_thai:
-                response_text = "สวัสดีค่ะ! ยินดีต้อนรับสู่ ZynxAGI 🌟 ฉันคือ Deeja น้องดีจ้าที่จะช่วยคุณเชื่อมต่อกับ AI ที่เหมาะสมที่สุดพร้อมความเข้าใจทางวัฒนธรรม! ระบบกำลังพัฒนาอยู่แต่พร้อมช่วยเหลือคุณแล้วค่ะ ✨"
-                cultural_context = {
-                    "primaryCulture": "thai",
-                    "formalityLevel": "casual",
-                    "politenessLevel": 0.9,
-                    "culturalMarkers": ["ค่ะ", "kreng_jai"],
-                    "communicationStyle": "warm_thai"
-                }
-            else:
-                response_text = "Hello! Welcome to ZynxAGI 🌟 I'm Deeja, your cultural-intelligent AI assistant who will help you connect with the most suitable AI while understanding cultural nuances! The system is under development but ready to help you! ✨"
-                cultural_context = {
-                    "primaryCulture": "international",
-                    "formalityLevel": "friendly",
-                    "politenessLevel": 0.7,
-                    "culturalMarkers": [],
-                    "communicationStyle": "warm_international"
-                }
-        else:
-            if is_thai:
-                response_text = f"ขอบคุณสำหรับข้อความ: '{message}' ค่ะ 🙏 ZynxAGI กำลังพัฒนาระบบความฉลาดทางวัฒนธรรมเพื่อเข้าใจการสื่อสารแบบไทยและสากลค่ะ ฉันพร้อมช่วยเหลือคุณ! 🤖💫"
-            else:
-                response_text = f"Thank you for your message: '{message}' 🙏 ZynxAGI is developing cultural intelligence to understand both Thai and international communication styles. I'm here to help! 🤖💫"
+        # Try Deeja agent first
+        try:
+            deeja_response = await deeja_agent.process_message(message, context)
             
-            cultural_context = {
-                "primaryCulture": "thai" if is_thai else "international",
-                "formalityLevel": "casual",
-                "politenessLevel": 0.8 if is_thai else 0.7,
-                "culturalMarkers": ["ค่ะ"] if is_thai else [],
-                "communicationStyle": "helpful_thai" if is_thai else "helpful_international"
+            # Create metadata entry for the interaction
+            metadata_uuid = zynx_metadata.create_metadata(
+                metadata_type="interaction",
+                title=f"Deeja Chat Interaction",
+                content=f"Input: {message}\nResponse: {deeja_response.text}",
+                tags=["deeja", "chat", "cultural_ai"]
+            )
+            
+            return {
+                "message": deeja_response.text,
+                "aiPlatform": "deeja",
+                "culturalContext": {
+                    "primaryCulture": "thai" if deeja_response.cultural_context.startswith("thai") else "international",
+                    "emotion_score": deeja_response.emotion_score,
+                    "politeness_level": deeja_response.politeness_level,
+                    "thai_elements": deeja_response.thai_elements
+                },
+                "metadata_uuid": metadata_uuid,
+                "attribution": deeja_agent.get_attribution(),
+                "source": "deeja_agent",
+                "culturalAccuracyScore": 0.95,
+                "emotionalIntelligenceScore": deeja_response.emotion_score,
+                "processingTime": 0.3
             }
-        
-        return {
-            "message": response_text,
-            "aiPlatform": "deeja",
-            "culturalContext": cultural_context,
-            "culturalAccuracyScore": 0.95,
-            "emotionalIntelligenceScore": 0.88,
-            "processingTime": 0.5
-        }
+            
+        except Exception as deeja_error:
+            logger.warning(f"Deeja agent error, falling back to local LLM: {deeja_error}")
+            
+            # Activate local LLM fallback
+            await local_llm_fallback.activate_fallback("deeja_agent_error")
+            
+            # Detect Thai context
+            is_thai = any(ord(char) >= 0x0E00 and ord(char) <= 0x0E7F for char in message)
+            
+            local_response = await local_llm_fallback.process_local(
+                message, context, thai_context=is_thai
+            )
+            
+            return {
+                "message": local_response.text,
+                "aiPlatform": "local_fallback",
+                "culturalContext": {
+                    "primaryCulture": "thai" if is_thai else "international",
+                    "confidence": local_response.confidence,
+                    "empathy_score": local_response.empathy_score
+                },
+                "source": local_response.source,
+                "fallback_mode": True,
+                "attribution": local_llm_fallback.get_status()["attribution"],
+                "culturalAccuracyScore": local_response.confidence,
+                "emotionalIntelligenceScore": local_response.empathy_score,
+                "processingTime": 0.8
+            }
+            
     except Exception as e:
-        logger.error(f"Error in chat message: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        logger.error(f"Chat endpoint error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Chat processing failed")
 
 @app.post("/api/v1/cultural/analyze")
 async def cultural_analyze(request: dict):
