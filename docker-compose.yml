@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Main Zynx AGI Application
+  zynx-agi:
+    build:
+      context: .
+      target: production
+    ports:
+      - "8000:8000"
+    environment:
+      - ZYNX_ENV=production
+      - DATABASE_URL=postgresql://zynx:zynxpass@postgres:5432/zynxagi
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./logs:/app/logs
+      - ./artifacts:/app/artifacts
+    networks:
+      - zynx-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: zynxagi
+      POSTGRES_USER: zynx
+      POSTGRES_PASSWORD: zynxpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - zynx-network
+    restart: unless-stopped
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - zynx-network
+    restart: unless-stopped
+
+  # Frontend (React/TypeScript)
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - zynx-agi
+    networks:
+      - zynx-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  zynx-network:
+    driver: bridge

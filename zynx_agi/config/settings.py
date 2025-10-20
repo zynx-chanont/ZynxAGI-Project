@@ -1,5 +1,11 @@
-from pydantic_settings import BaseSettings
 from typing import List, Optional
+
+# Simple BaseSettings replacement for when pydantic-settings is not available
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    class BaseSettings:
+        pass
 
 class Settings(BaseSettings):
     # Application Settings
