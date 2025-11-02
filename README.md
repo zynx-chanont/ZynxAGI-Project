@@ -6,6 +6,12 @@ Zynx AGI เป็นแพลตฟอร์ม AI ขั้นสูงที�
 
 Zynx AGI is an advanced AI platform created by Chanont Wankaew, focusing on offline capabilities, cultural intelligence, and emotional integration. The system is a prompt-driven modular AGI designed to run a network of intelligent agents.
 
+## 📚 เอกสารประกอบ (Documentation)
+
+- 📖 **[ARCHITECTURE.md](./ARCHITECTURE.md)** - สถาปัตยกรรมระบบโดยสมบูรณ์ (Complete System Architecture)
+- 🤖 **[AGENTS.md](./AGENTS.md)** - รายละเอียด Agent ทั้งหมด (All Agents Details)
+- 🔒 **[SECURITY.md](./SECURITY.md)** - ความปลอดภัย (Security)
+
 ## คุณสมบัติหลัก (Key Features)
 
 - 🤖 **Avatar Deeja**: ตัวแทน AI ที่มีความฉลาดทางอารมณ์
