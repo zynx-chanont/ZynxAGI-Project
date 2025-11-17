@@ -10,6 +10,7 @@ from ..cultural.thai_cultural_engine import ThaiCulturalEngine
 from ..ai_platforms.openai_client import OpenAIClient
 from ..ai_platforms.claude_client import ClaudeClient
 from ..ai_platforms.thai_cultural_mcp import get_current_user, TokenData
+from ..agents.zynx_metadata import observe_interaction
 import httpx
 
 logger = logging.getLogger(__name__)
@@ -111,7 +112,7 @@ async def process_message_with_cultural_context(
     # Generate response
     return await client.generate_response(
         message=message.text,
-        cultural_context=message.context.dict() if message.context else None,
+        cultural_context=message.context.model_dump() if message.context else None,
         temperature=message.temperature,
         max_tokens=message.max_tokens
     )
@@ -193,6 +194,19 @@ async def chat_message(
             processing_time=processing_time
         )
         
+        # Observer: Track this interaction with Zynx-Metadata
+        background_tasks.add_task(
+            observe_chat_interaction,
+            agent_name="deeja",
+            user_input=message.text,
+            agent_response=response["text"],
+            context={
+                "model": message.model,
+                "processing_time": processing_time,
+                "cultural_context": message.context.dict() if message.context else None
+            }
+        )
+        
         return ChatResponse(
             text=response["text"],
             model=response["model"],
@@ -222,6 +236,15 @@ async def log_chat_usage(message: ChatMessage, response: Dict[str, Any], process
         )
     except Exception as e:
         logger.error(f"Error logging chat usage: {str(e)}")
+
+async def observe_chat_interaction(agent_name: str, user_input: str, agent_response: str, context: Dict[str, Any] = None):
+    """Observer function to track chat interactions with Zynx-Metadata"""
+    try:
+        metadata = await observe_interaction(agent_name, user_input, agent_response, context)
+        if metadata:
+            logger.info(f"Zynx-Metadata: Tracked interaction with UUID {metadata.uuid} - Intent: {metadata.intent_detected}")
+    except Exception as e:
+        logger.error(f"Error in Zynx-Metadata observer: {str(e)}")
 
 # WebSocket Endpoints
 @router.websocket("/ws/{client_id}")
@@ -253,6 +276,20 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                 
                 # Process message and generate response
                 response = await process_message_with_cultural_context(chat_message, client)
+                
+                # Observer: Track WebSocket interaction
+                asyncio.create_task(
+                    observe_chat_interaction(
+                        agent_name="deeja_ws",
+                        user_input=chat_message.text,
+                        agent_response=response["text"],
+                        context={
+                            "client_id": client_id,
+                            "model": chat_message.model,
+                            "connection_type": "websocket"
+                        }
+                    )
+                )
                 
                 # Send response
                 await manager.send_message(

@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 import logging
+import asyncio
 from .config.settings import settings
+from .agents.zynx_metadata import observe_interaction
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,6 +28,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register API routers after app creation
+def register_routers():
+    """Register API routers"""
+    try:
+        from .api.chat import router as chat_router
+        from .api.cultural import router as cultural_router
+        from .api.metadata import router as metadata_router
+        
+        app.include_router(chat_router)
+        app.include_router(cultural_router)
+        app.include_router(metadata_router)
+        logger.info("API routers registered successfully")
+    except Exception as e:
+        logger.warning(f"Some API routers could not be registered: {e}")
+
+# Register routers
+register_routers()
 
 # --- SERVE REACT APP ---
 # Mount the React frontend static files
@@ -109,6 +129,20 @@ async def chat_message(request: dict):
                 "culturalMarkers": ["ค่ะ"] if is_thai else [],
                 "communicationStyle": "helpful_thai" if is_thai else "helpful_international"
             }
+        
+        # Observer: Track chat interaction
+        asyncio.create_task(
+            observe_interaction(
+                agent_name="deeja_basic",
+                user_input=message,
+                agent_response=response_text,
+                context={
+                    "endpoint": "/api/v1/chat/message",
+                    "language": "thai" if is_thai else "english",
+                    "cultural_context": cultural_context
+                }
+            )
+        )
         
         return {
             "message": response_text,

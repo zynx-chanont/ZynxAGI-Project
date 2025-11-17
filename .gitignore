@@ -70,3 +70,9 @@ yarn-error.log*
 .DS_Store
 Thumbs.db 
 
+# Zynx-Metadata Agent Logs (Runtime artifacts - should not be committed)
+zynx_logs/
+zynx_logs_*/
+*.zynx_metadata
+*.zynx_manifest 
+
