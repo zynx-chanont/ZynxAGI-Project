@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/react';
 import './index.css';
 
 interface Message {
@@ -166,6 +167,7 @@ function App() {
       </div>
 
       <Toaster position="top-right" />
+      <Analytics />
     </div>
   );
 }
