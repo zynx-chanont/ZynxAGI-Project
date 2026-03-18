@@ -1,0 +1,34 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "build": "./scripts/build.js",
+    "build:watch": "lerna watch -- lerna run build",
+    "test": "./scripts/test.js",
+    "publish": "./scripts/publish.js",
+    "lint": "eslint packages/* scripts/*",
+    "lint:quiet": "eslint packages/* scripts/* --quiet",
+    "lint:fix": "eslint packages/* scripts/* --fix"
+  },
+  "workspaces": [
+    "packages/@apphosting/*",
+    "packages/create-next-on-firebase",
+    "packages/firebase-frameworks"
+  ],
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^17.1.2",
+    "@types/mocha": "*",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "eslint": "^8.53.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-jsdoc": "^46.8.2",
+    "eslint-plugin-prettier": "^5.0.1",
+    "lerna": "^7.4.0",
+    "mocha": "^10.2.0",
+    "prettier": "^3.0.3",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^5.2.0",
+    "zod": "^3.22.4"
+  }
+}
