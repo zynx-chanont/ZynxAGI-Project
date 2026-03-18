@@ -1,0 +1,7 @@
+build
+_skbuild
+tmp*
+__pycache__
+*.egg*
+node_modules/
+*.log

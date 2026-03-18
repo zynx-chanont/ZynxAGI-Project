@@ -1,0 +1,560 @@
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_688867b6fb90819e92212445bb8289840b8311511b435264","object":"response","created_at":1753769911,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4.1-2025-04-14","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[{"type":"web_search_preview","search_context_size":"medium","user_location":{"type":"approximate","city":null,"country":"US","region":null,"timezone":null}}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+event: response.in_progress
+data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_688867b6fb90819e92212445bb8289840b8311511b435264","object":"response","created_at":1753769911,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4.1-2025-04-14","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[{"type":"web_search_preview","search_context_size":"medium","user_location":{"type":"approximate","city":null,"country":"US","region":null,"timezone":null}}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"ws_688867b77b7c819ebd9791fd981b6b560b8311511b435264","type":"web_search_call","status":"in_progress","action":{"type":"search"}}}
+
+event: response.web_search_call.in_progress
+data: {"type":"response.web_search_call.in_progress","sequence_number":3,"output_index":0,"item_id":"ws_688867b77b7c819ebd9791fd981b6b560b8311511b435264"}
+
+event: response.web_search_call.searching
+data: {"type":"response.web_search_call.searching","sequence_number":4,"output_index":0,"item_id":"ws_688867b77b7c819ebd9791fd981b6b560b8311511b435264"}
+
+event: response.web_search_call.completed
+data: {"type":"response.web_search_call.completed","sequence_number":5,"output_index":0,"item_id":"ws_688867b77b7c819ebd9791fd981b6b560b8311511b435264"}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","sequence_number":6,"output_index":0,"item":{"id":"ws_688867b77b7c819ebd9791fd981b6b560b8311511b435264","type":"web_search_call","status":"completed","action":{"type":"search","query":"positive news stories today"}}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":7,"output_index":1,"item":{"id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","type":"message","status":"in_progress","content":[],"role":"assistant"}}
+
+event: response.content_part.added
+data: {"type":"response.content_part.added","sequence_number":8,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":""}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":9,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"As","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":10,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" of","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":11,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" July","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":12,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":13,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"29","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":14,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":",","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":15,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":16,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"202","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":17,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"5","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":18,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":",","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":19,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" one","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":20,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" uplifting","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":21,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" news","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":22,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" story","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":23,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" is","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":24,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" the","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":25,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" re","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":26,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"int","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":27,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"roduction","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":28,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" of","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":29,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" giant","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":30,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" river","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":31,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ot","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":32,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"ters","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":33,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" to","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":34,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Argentina","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":35,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"'s","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":36,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Iber","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":37,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"á","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":38,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" wetlands","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":39,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":".","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":40,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":41,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"After","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":42,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" an","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":43,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" absence","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":44,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" of","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":45,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" over","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":46,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":47,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"40","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":48,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" years","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":49,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" due","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":50,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" to","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":51,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" habitat","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":52,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" loss","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":53,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" and","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":54,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" illegal","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":55,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" hunting","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":56,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":",","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":57,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" a","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":58,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" family","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":59,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" of","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":60,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" four","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":61,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ot","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":62,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"ters","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":63,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":",","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":64,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" including","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":65,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" two","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":66,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" pups","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":67,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" born","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":68,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" in","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":69,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" captivity","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":70,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":",","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":71,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" has","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":72,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" been","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":73,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" released","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":74,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" into","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":75,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" their","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":76,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" original","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":77,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" habitat","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":78,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":".","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":79,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":80,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"This","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":81,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" marks","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":82,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" a","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":83,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" significant","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":84,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" step","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":85,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" in","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":86,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" conservation","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":87,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" efforts","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":88,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" to","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":89,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" restore","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":90,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" the","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":91,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" species","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":92,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" in","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":93,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" the","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":94,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" region","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":95,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":".","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":96,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":97,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"([conservationoptimism.org](https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai))","logprobs":[]}
+
+event: response.output_text.annotation.added
+data: {"type":"response.output_text.annotation.added","sequence_number":98,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"annotation_index":0,"annotation":{"type":"url_citation","end_index":529,"start_index":398,"title":"7 stories of optimism this week (08.07.25-14.07.25) - Conservation Optimism","url":"https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai"}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":99,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"\n\nAdditionally","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":100,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":",","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":101,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" the","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":102,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" River","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":103,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Seine","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":104,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" in","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":105,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Paris","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":106,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" has","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":107,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" reopened","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":108,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" to","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":109,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" swimmers","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":110,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" for","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":111,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" the","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":112,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" first","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":113,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" time","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":114,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" since","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":115,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":116,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"192","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":117,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"3","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":118,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":".","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":119,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":120,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"Following","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":121,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" a","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":122,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" $","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":123,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"1","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":124,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":".","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":125,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"6","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":126,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" billion","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":127,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" cleanup","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":128,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":",","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":129,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" three","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":130,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" designated","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":131,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" areas","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":132,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" near","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":133,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" landmarks","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":134,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" like","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":135,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" the","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":136,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Eiffel","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":137,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Tower","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":138,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" and","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":139,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Notre","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":140,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Dame","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":141,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Cathedral","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":142,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" now","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":143,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" allow","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":144,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" public","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":145,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" swimming","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":146,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":",","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":147,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" providing","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":148,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" Par","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":149,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"isi","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":150,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"ans","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":151,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" and","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":152,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" visitors","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":153,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" a","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":154,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" unique","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":155,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" way","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":156,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" to","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":157,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" enjoy","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":158,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" the","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":159,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" city","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":160,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":".","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":161,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":162,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"([onlygoodnewsdaily.com](https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai))","logprobs":[]}
+
+event: response.output_text.annotation.added
+data: {"type":"response.output_text.annotation.added","sequence_number":163,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"annotation_index":1,"annotation":{"type":"url_citation","end_index":947,"start_index":837,"title":"Today's Good News | OGN Daily","url":"https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai"}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":164,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":"\n\nThese","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":165,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" stories","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":166,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" highlight","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":167,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ongoing","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":168,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" global","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":169,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" efforts","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":170,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" to","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":171,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" restore","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":172,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" natural","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":173,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" habitats","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":174,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" and","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":175,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" enhance","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":176,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" urban","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":177,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" environments","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":178,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" for","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":179,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" public","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":180,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" enjoyment","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":181,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":".","logprobs":[]}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":182,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"delta":" ","logprobs":[]}
+
+event: response.output_text.done
+data: {"type":"response.output_text.done","sequence_number":183,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"text":"As of July 29, 2025, one uplifting news story is the reintroduction of giant river otters to Argentina's Iberá wetlands. After an absence of over 40 years due to habitat loss and illegal hunting, a family of four otters, including two pups born in captivity, has been released into their original habitat. This marks a significant step in conservation efforts to restore the species in the region. ([conservationoptimism.org](https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai))\n\nAdditionally, the River Seine in Paris has reopened to swimmers for the first time since 1923. Following a $1.6 billion cleanup, three designated areas near landmarks like the Eiffel Tower and Notre Dame Cathedral now allow public swimming, providing Parisians and visitors a unique way to enjoy the city. ([onlygoodnewsdaily.com](https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai))\n\nThese stories highlight ongoing global efforts to restore natural habitats and enhance urban environments for public enjoyment. ","logprobs":[]}
+
+event: response.content_part.done
+data: {"type":"response.content_part.done","sequence_number":184,"item_id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","output_index":1,"content_index":0,"part":{"type":"output_text","annotations":[{"type":"url_citation","end_index":529,"start_index":398,"title":"7 stories of optimism this week (08.07.25-14.07.25) - Conservation Optimism","url":"https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai"},{"type":"url_citation","end_index":947,"start_index":837,"title":"Today's Good News | OGN Daily","url":"https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai"}],"logprobs":[],"text":"As of July 29, 2025, one uplifting news story is the reintroduction of giant river otters to Argentina's Iberá wetlands. After an absence of over 40 years due to habitat loss and illegal hunting, a family of four otters, including two pups born in captivity, has been released into their original habitat. This marks a significant step in conservation efforts to restore the species in the region. ([conservationoptimism.org](https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai))\n\nAdditionally, the River Seine in Paris has reopened to swimmers for the first time since 1923. Following a $1.6 billion cleanup, three designated areas near landmarks like the Eiffel Tower and Notre Dame Cathedral now allow public swimming, providing Parisians and visitors a unique way to enjoy the city. ([onlygoodnewsdaily.com](https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai))\n\nThese stories highlight ongoing global efforts to restore natural habitats and enhance urban environments for public enjoyment. "}}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","sequence_number":185,"output_index":1,"item":{"id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","type":"message","status":"completed","content":[{"type":"output_text","annotations":[{"type":"url_citation","end_index":529,"start_index":398,"title":"7 stories of optimism this week (08.07.25-14.07.25) - Conservation Optimism","url":"https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai"},{"type":"url_citation","end_index":947,"start_index":837,"title":"Today's Good News | OGN Daily","url":"https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai"}],"logprobs":[],"text":"As of July 29, 2025, one uplifting news story is the reintroduction of giant river otters to Argentina's Iberá wetlands. After an absence of over 40 years due to habitat loss and illegal hunting, a family of four otters, including two pups born in captivity, has been released into their original habitat. This marks a significant step in conservation efforts to restore the species in the region. ([conservationoptimism.org](https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai))\n\nAdditionally, the River Seine in Paris has reopened to swimmers for the first time since 1923. Following a $1.6 billion cleanup, three designated areas near landmarks like the Eiffel Tower and Notre Dame Cathedral now allow public swimming, providing Parisians and visitors a unique way to enjoy the city. ([onlygoodnewsdaily.com](https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai))\n\nThese stories highlight ongoing global efforts to restore natural habitats and enhance urban environments for public enjoyment. "}],"role":"assistant"}}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":186,"response":{"id":"resp_688867b6fb90819e92212445bb8289840b8311511b435264","object":"response","created_at":1753769911,"status":"completed","background":false,"error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4.1-2025-04-14","output":[{"id":"ws_688867b77b7c819ebd9791fd981b6b560b8311511b435264","type":"web_search_call","status":"completed","action":{"type":"search","query":"positive news stories today"}},{"id":"msg_688867b99c54819e8db837fcf08da9040b8311511b435264","type":"message","status":"completed","content":[{"type":"output_text","annotations":[{"type":"url_citation","end_index":529,"start_index":398,"title":"7 stories of optimism this week (08.07.25-14.07.25) - Conservation Optimism","url":"https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai"},{"type":"url_citation","end_index":947,"start_index":837,"title":"Today's Good News | OGN Daily","url":"https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai"}],"logprobs":[],"text":"As of July 29, 2025, one uplifting news story is the reintroduction of giant river otters to Argentina's Iberá wetlands. After an absence of over 40 years due to habitat loss and illegal hunting, a family of four otters, including two pups born in captivity, has been released into their original habitat. This marks a significant step in conservation efforts to restore the species in the region. ([conservationoptimism.org](https://conservationoptimism.org/7-stories-of-optimism-this-week-08-07-25-14-07-25/?utm_source=openai))\n\nAdditionally, the River Seine in Paris has reopened to swimmers for the first time since 1923. Following a $1.6 billion cleanup, three designated areas near landmarks like the Eiffel Tower and Notre Dame Cathedral now allow public swimming, providing Parisians and visitors a unique way to enjoy the city. ([onlygoodnewsdaily.com](https://www.onlygoodnewsdaily.com/post/just-good-news-7-july-2025?utm_source=openai))\n\nThese stories highlight ongoing global efforts to restore natural habitats and enhance urban environments for public enjoyment. "}],"role":"assistant"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[{"type":"web_search_preview","search_context_size":"medium","user_location":{"type":"approximate","city":null,"country":"US","region":null,"timezone":null}}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":320,"input_tokens_details":{"cached_tokens":0},"output_tokens":256,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":576},"user":null,"metadata":{}}}
