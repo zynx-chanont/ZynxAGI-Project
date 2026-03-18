@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🐛 Model Issues
+    url: https://huggingface.co/openai/gpt-oss-120b/discussions
+    about: For general questions about the models, please use the Community feature on Hugging Face.
+  - name: 💡 General Feedback
+    url: https://openai.com/open-models
+    about: Suggest new features on our feature request page.
