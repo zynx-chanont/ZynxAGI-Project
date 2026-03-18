@@ -1,0 +1,69 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Zynx PDF Translator API",
+    "description": "API for translating documents while preserving formatting (Thai ↔ English)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://zynx-mygpt-pdf.web.app"
+    }
+  ],
+  "paths": {
+    "/translate": {
+      "post": {
+        "operationId": "translateDocument",
+        "summary": "Translate a document with formatting preserved",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Document file to translate (PDF or Markdown)"
+                  },
+                  "source_language": {
+                    "type": "string",
+                    "example": "th"
+                  },
+                  "target_language": {
+                    "type": "string",
+                    "example": "en"
+                  }
+                },
+                "required": [
+                  "file",
+                  "source_language",
+                  "target_language"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Translated document successfully returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "translated_file_url": {
+                      "type": "string",
+                      "description": "URL to download the translated file"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

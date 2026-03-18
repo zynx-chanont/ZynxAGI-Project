@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Zynx PDF Translator",
+  "name_for_model": "zynx_pdf_translator",
+  "description_for_human": "แปลเอกสาร PDF/Markdown โดยรักษารูปแบบเดิม พร้อมส่งกลับในรูปแบบที่พร้อมใช้งาน",
+  "description_for_model": "A tool that translates documents while preserving the original format. Supports Thai-English PDF or Markdown document translation.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://zynx-mygpt-pdf.web.app/.well-known/openapi.json",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://zynx-mygpt-pdf.web.app/assets/zynx_icon_v2.png",
+  "contact_email": "zynx.ai.thai@gmail.com",
+  "legal_info_url": "https://zynx-mygpt-pdf.web.app/legal.html"
+}
