@@ -1,0 +1,25 @@
+Phase,Component,Agent,Functionality,Tools_Tech,API_Endpoint,Related_Files,Notes
+assigned,Phase 1 – Infra & Runtime,,"Set up AGI runtime (GPU, Docker, FastAPI)","phase-1,infra",,,Status: Not Started
+Phase 1 – Infra & Runtime,Setup Local AGI Runtime,,Configure offline FastAPI + Docker agents,"offline,GPU",,,Status: Not Started
+Phase 1 – Infra & Runtime,Setup Cloud Infra (GCP),,Deploy GCP backend for Zynx AGI,"GCP,hosting",,,Status: Not Started
+Phase 1 – Infra & Runtime,Install CUDA Support,,Validate PyTorch GPU agent execution,"GPU,CUDA",,,Status: Not Started
+assigned,Phase 2 – MCP + Routing,,Build MCP engine + Router + Executor,"phase-2,agents",,,Status: Not Started
+Phase 2 – MCP + Routing,Implement MCP Protocol,,Agent-to-Agent context passing with JSON logs,"MCP,agent-comm",,,Status: Not Started
+Phase 2 – MCP + Routing,Build Intelligent Agent Router,,Agent selector with fallback and load logic,"router,agent-logic",,,Status: Not Started
+Phase 2 – MCP + Routing,Execution Bridge Abstraction,,Unify local/API/script execution pipelines,"executor,abstraction",,,Status: Not Started
+assigned,Phase 3 – UX & Memory,,Build live interface + emotional memory,"phase-3,UX,memory",,,Status: Not Started
+Phase 3 – UX & Memory,Develop Control Center UI,,Show running workflows with buttons,"UX,react",,,Status: Not Started
+Phase 3 – UX & Memory,Memory Layer Integration,,"Save feedback, session logs, emotional trace","memory,feedback",,,Status: Not Started
+Phase 3 – UX & Memory,Emotional Recovery Layer,,"Add pending, retry, and human-commit hooks","empathy,lifecycle",,,Status: Not Started
+assigned,Phase 4 – Ethical Governance & Audit,,Deploy governance protocols and ethical checks,"phase-4,ethics",,,Status: Not Started
+Phase 4 – Ethical Governance & Audit,Role-based Access Control,,Define Zynx_ID levels and permission layers,"auth,security",,,Status: Not Started
+Phase 4 – Ethical Governance & Audit,Behavior Tracking System,,"Monitor agent actions, detect abnormal patterns","monitoring,ethics",,,Status: Not Started
+Phase 4 – Ethical Governance & Audit,PDPA Compliance Layer,,Ensure all logs and memory align with PDPA,"compliance,privacy",,,Status: Not Started
+,Phase 5 – External Integration,,Enable AGI integration with external systems,"phase-5,external",,,Status: Not Started
+Phase 5 – External Integration,Create RAG Interface,,"Integrate with LangChain, Chroma, etc.","rag,langchain",,,Status: Not Started
+Phase 5 – External Integration,Enable Claude/Gemini Proxy,,Bridge Zynx agents to Claude or Gemini via MCP,"mcp,proxy",,,Status: Not Started
+Phase 5 – External Integration,Setup Agent API Gateway,,Expose /run-agent securely for public calls,"API,public",,,Status: Not Started
+,"Phase 6 – Monitoring, Feedback, Reinvention",,Launch global-facing monitoring + reflection systems,"phase-6,monitor",,,Status: Not Started
+"Phase 6 – Monitoring, Feedback, Reinvention",Live Dashboard with KPIs,,Real-time status of all AGI workflows,"dashboard,KPI",,,Status: Not Started
+"Phase 6 – Monitoring, Feedback, Reinvention",User Feedback Loop,,Store and analyze human corrections per agent,"feedback,UX",,,Status: Not Started
+"Phase 6 – Monitoring, Feedback, Reinvention",Self-Reflection Mechanism,,Auto-detect errors and propose improvements,"self-learn,improve",,,Status: Not Started
