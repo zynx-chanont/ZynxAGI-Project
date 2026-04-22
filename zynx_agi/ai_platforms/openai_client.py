@@ -15,12 +15,11 @@ class OpenAIClient:
     """OpenAI client with cultural context integration and optimization"""
     
     def __init__(self):
-        self.settings = settings.ai
-        self.client = AsyncOpenAI(api_key=self.settings.OPENAI_API_KEY)
+        self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
         self.cultural_engine = ThaiCulturalEngine()
-        self.model = self.settings.OPENAI_MODEL
-        self.max_tokens = self.settings.OPENAI_MAX_TOKENS
-        self.temperature = self.settings.OPENAI_TEMPERATURE
+        self.model = settings.OPENAI_MODEL
+        self.max_tokens = settings.OPENAI_MAX_TOKENS
+        self.temperature = settings.OPENAI_TEMPERATURE
         self.encoding = tiktoken.encoding_for_model(self.model)
         self._token_usage_stats = {
             "total_tokens": 0,

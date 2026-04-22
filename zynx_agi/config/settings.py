@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     GOOGLE_API_KEY: Optional[str] = None
     
+    # OpenAI Model Settings
+    OPENAI_MODEL: str = "gpt-4"
+    OPENAI_TEMPERATURE: float = 0.7
+    OPENAI_MAX_TOKENS: int = 1000
+    
     # Basic Settings
     SECRET_KEY: str = "zynx-agi-secret-key-development"  # This should be overridden in production
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

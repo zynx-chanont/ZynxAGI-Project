@@ -36,10 +36,12 @@ def register_routers():
         from .api.chat import router as chat_router
         from .api.cultural import router as cultural_router
         from .api.metadata import router as metadata_router
+        from .api.export import router as export_router
         
         app.include_router(chat_router)
         app.include_router(cultural_router)
         app.include_router(metadata_router)
+        app.include_router(export_router)
         logger.info("API routers registered successfully")
     except Exception as e:
         logger.warning(f"Some API routers could not be registered: {e}")

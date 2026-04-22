@@ -244,3 +244,61 @@ class CloudStorageDriver(StorageDriver):
         local_driver = LocalStorageDriver(str(self.base_path),
                                          self.fernet.key.decode() if self.fernet else None)
         return await local_driver.get_logs(start_time, end_time)
+
+
+class MemoryStorageDriver(StorageDriver):
+    """In-memory storage driver for testing and development"""
+    
+    def __init__(self, encryption_key: Optional[str] = None):
+        # Don't create filesystem paths for memory storage
+        self.base_path = Path("/tmp/memory_storage")
+        self.fernet = Fernet(encryption_key.encode()) if encryption_key else None
+        self.artifacts: Dict[str, Dict[str, Any]] = {}
+        self.logs: List[Dict[str, Any]] = []
+        self.metadata: Dict[str, Dict[str, Any]] = {}
+    
+    async def store_artifact(self, artifact_id: str, data: bytes, metadata: Dict[str, Any]) -> str:
+        """Store artifact in memory"""
+        data_hash = self._generate_hash(data)
+        
+        # Store artifact
+        self.artifacts[artifact_id] = {
+            "content": data,
+            "hash": data_hash,
+            "metadata": metadata,
+            "stored_at": datetime.utcnow().isoformat()
+        }
+        
+        # Store metadata
+        self.metadata[artifact_id] = {
+            **metadata,
+            "hash": data_hash,
+            "size": len(data),
+            "stored_at": datetime.utcnow().isoformat()
+        }
+        
+        return data_hash
+    
+    async def retrieve_artifact(self, artifact_id: str) -> Optional[bytes]:
+        """Retrieve artifact from memory"""
+        artifact = self.artifacts.get(artifact_id)
+        if artifact:
+            return artifact["content"]
+        return None
+    
+    async def store_log(self, log_entry: Dict[str, Any]) -> str:
+        """Store log entry in memory"""
+        log_id = f"log_{len(self.logs):06d}"
+        log_entry["log_id"] = log_id
+        log_entry["timestamp"] = datetime.utcnow().isoformat()
+        self.logs.append(log_entry)
+        return log_id
+    
+    async def get_logs(self, start_time: datetime, end_time: datetime) -> List[Dict[str, Any]]:
+        """Retrieve logs from memory within time range"""
+        filtered_logs = []
+        for log in self.logs:
+            log_time = datetime.fromisoformat(log["timestamp"])
+            if start_time <= log_time <= end_time:
+                filtered_logs.append(log)
+        return filtered_logs
