@@ -4,6 +4,17 @@ ZynxAGI is a Thai-English bilingual AI platform with cultural intelligence built
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
+## Agent Customization Workflow (onboarding)
+
+- `AGENTS.md` describes system-level agent roles (Deeja, Dispatcher, Verifier, CodeD).
+- `.github/agents/zynxagi-developer.agent.md` is the workspace agent used for code editing and internal tasks.
+- For new agent customizations, create:
+  - `.github/copilot-instructions.md` for global strategy and commands,
+  - `.github/agents/<name>.agent.md` for context-aware behavior, or
+  - `.github/skills/<name>/SKILL.md` for reusable workflows.
+- Follow the “link, don’t embed” principle: reference existing docs (`README.md`, `ARCHITECTURE.md`, `AGENTS.md`) in new instructions.
+- Validate with `python -m pytest tests/ -v` and lints (`npx eslint` in frontend) after updates.
+
 ## Working Effectively
 
 ### Required Environment
@@ -174,6 +185,9 @@ frontend/
 - **CodeD**: Coding assistant (Planned)
 - **Verifier**: Fact-checking and validation (Planned)  
 - **Dispatcher**: Central nervous system for agent coordination (Live)
+- **Create Skill Agent Suite**: `/create-skill-agent` and `/create-skill` for generating and validating SKILL.md workflows (Live)
+
+> NOTE: See `AGENTS.md` section "6. Create Skill Agent Suite" for details and example use cases.
 
 ## Environment Configuration
 
