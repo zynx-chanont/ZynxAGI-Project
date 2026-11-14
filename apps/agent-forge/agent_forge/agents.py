@@ -27,7 +27,8 @@ class AgentRegistry:
                 response=await client.get(self.base+"/api/v1/agents/status",headers=self._headers())
                 if response.status_code==200:
                     data=response.json()
-                    return {"zynxagi":"healthy" if data.get("initialized") else "degraded",
+                    is_healthy=bool(data.get("initialized")) and bool(data.get("health",{}).get("healthy"))
+                    return {"zynxagi":"healthy" if is_healthy else "degraded",
                             "initialized":data.get("initialized",False),
                             "agents":data.get("agents",[]),
                             "capabilities":data.get("capabilities",{})}
