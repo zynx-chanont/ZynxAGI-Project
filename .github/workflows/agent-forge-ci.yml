@@ -1,0 +1,41 @@
+name: Agent Forge verification
+on:
+  pull_request:
+    paths:
+      - "apps/agent-forge/**"
+      - "zynx_agi/**"
+      - ".github/workflows/agent-forge-ci.yml"
+  push:
+    branches: ["feat/agent-forge-monorepo"]
+    paths:
+      - "apps/agent-forge/**"
+      - "zynx_agi/**"
+      - ".github/workflows/agent-forge-ci.yml"
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/agent-forge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -q
+      - run: python -m compileall -q agent_forge
+  dashboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/agent-forge/dashboard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/agent-forge/dashboard/package-lock.json
+      - run: npm install
+      - run: npm run build
