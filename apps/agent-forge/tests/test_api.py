@@ -38,3 +38,9 @@ def test_api_token_is_enforced_when_configured(monkeypatch):
     with TestClient(app) as client:
         response=client.get("/api/projects")
     assert response.status_code==401
+
+def test_api_fails_closed_when_token_is_not_configured(monkeypatch):
+    monkeypatch.delenv("AGENT_FORGE_API_TOKEN", raising=False)
+    with TestClient(app) as client:
+        response = client.get("/api/projects")
+    assert response.status_code == 503
