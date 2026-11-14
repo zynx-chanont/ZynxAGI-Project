@@ -68,6 +68,10 @@ async def dispatch_agent(
     # the registered agent capability. Keep that as the single dispatch path.
     command = f"/{_ALIASES[body.agent_id]}:{body.action} {body.message}"
     dispatch_request = {**body.payload, "message": command, "agent_forge_input": body.message}
+    if body.agent_id == "zynx_metadata":
+        dispatch_request.setdefault("data", {"content": body.message, **body.payload})
+    elif body.agent_id == "zynx_main" and body.action == "compliance":
+        dispatch_request.setdefault("content", body.message)
     result = await manager.process_request(dispatch_request)
     if not result.get("success"):
         raise HTTPException(status_code=502, detail={"message": "ZynxAGI dispatcher rejected the request", "result": result})
