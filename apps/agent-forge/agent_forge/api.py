@@ -11,17 +11,35 @@ from .orchestrator import Orchestrator
 from .evaluations import run_smoke_evaluations
 
 store=Store(); agents=AgentRegistry(); router=ModelRouter(); orchestrator=Orchestrator(store,agents,router)
-def authorize(x_agent_forge_token:str|None):
-    expected=os.getenv("AGENT_FORGE_API_TOKEN","")
-    if expected and not secrets.compare_digest(expected,x_agent_forge_token or ""):
-        raise HTTPException(401,"Invalid API token")
+
+
+def authorize(x_agent_forge_token: str | None):
+    expected = os.getenv("AGENT_FORGE_API_TOKEN", "").strip()
+    if not expected:
+        raise HTTPException(503, "API authentication is not configured")
+    if not secrets.compare_digest(expected, x_agent_forge_token or ""):
+        raise HTTPException(401, "Invalid API token")
+
 
 @asynccontextmanager
-async def lifespan(app:FastAPI):
+async def lifespan(app: FastAPI):
     yield
 
+
 app=FastAPI(title="Zynx Agent Forge",version="0.1.0",lifespan=lifespan)
-app.add_middleware(CORSMiddleware,allow_origins=os.getenv("AGENT_FORGE_CORS","http://localhost:5173").split(","),allow_methods=["GET","POST","PUT"],allow_headers=["Content-Type","X-Agent-Forge-Token"])
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv("AGENT_FORGE_CORS", "http://localhost:5173").split(",")
+    if origin.strip()
+]
+if "*" in cors_origins:
+    raise RuntimeError("AGENT_FORGE_CORS must contain explicit origins; wildcard CORS is not allowed")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_methods=["GET","POST","PUT"],
+    allow_headers=["Content-Type","X-Agent-Forge-Token"],
+)
 
 class ProjectIn(BaseModel):
     name:str=Field(min_length=1,max_length=120)
