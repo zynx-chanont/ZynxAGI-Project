@@ -1,5 +1,6 @@
 import asyncio
 import httpx
+import pytest
 from agent_forge.agents import AgentRegistry
 
 class FakeResponse:
@@ -16,7 +17,7 @@ class FakeClient:
     async def __aexit__(self,*args): return None
     async def get(self,url,**kwargs):
         self.calls.append(("GET",url,kwargs))
-        return FakeResponse(payload={"initialized":True,"agents":[{"agent_id":"deeja"}]})
+        return FakeResponse(payload={"initialized":True,"health":{"healthy":True},"agents":[{"agent_id":"deeja"}]})
     async def post(self,url,**kwargs):
         self.calls.append(("POST",url,kwargs))
         return FakeResponse(payload={"status":"dispatched","success":True,"agent_id":"deeja","response":{"ok":True}})
@@ -38,5 +39,19 @@ def test_dispatch_uses_real_zynxagi_bridge_contract(monkeypatch):
 
 def test_health_fails_closed_without_service_token(monkeypatch):
     monkeypatch.delenv("ZYNXAGI_AGENT_API_TOKEN",raising=False)
+    monkeypatch.setenv("ZYNXAGI_BASE_URL","http://zynxagi:8000")
     status=asyncio.run(AgentRegistry().health())
     assert status["zynxagi"]=="not_configured"
+
+def test_health_requires_explicit_bridge_url(monkeypatch):
+    monkeypatch.delenv("ZYNXAGI_BASE_URL",raising=False)
+    monkeypatch.setenv("ZYNXAGI_AGENT_API_TOKEN","placeholder-not-used")
+    status=asyncio.run(AgentRegistry().health())
+    assert status["zynxagi"]=="not_configured"
+
+def test_dispatch_requires_explicit_bridge_url(monkeypatch):
+    monkeypatch.delenv("ZYNXAGI_BASE_URL",raising=False)
+    monkeypatch.setenv("ZYNXAGI_AGENT_API_TOKEN","placeholder-not-used")
+    registry=AgentRegistry()
+    with pytest.raises(RuntimeError, match="ZYNXAGI_BASE_URL"):
+        asyncio.run(registry.dispatch("deeja","hello",{},"chat"))
