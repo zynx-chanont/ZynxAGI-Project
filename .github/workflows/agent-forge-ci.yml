@@ -48,6 +48,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install fastapi uvicorn pydantic httpx pytest python-jose[cryptography] passlib[bcrypt] python-multipart requests python-dotenv sqlalchemy cryptography aiohttp
+      - run: pip install fastapi uvicorn pydantic httpx pytest python-jose[cryptography] passlib[bcrypt] python-multipart requests python-dotenv sqlalchemy cryptography aiohttp pytz
       - run: pytest -q tests/test_agent_bridge.py
       - run: python -m compileall -q zynx_agi
