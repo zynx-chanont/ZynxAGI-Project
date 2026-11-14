@@ -44,7 +44,18 @@ class AgentDispatchIn(BaseModel):
 async def agent_status(request: Request, x_zynxagi_token: str | None = Header(default=None)):
     _authorize(x_zynxagi_token)
     manager = _manager(request)
-    health = await manager._perform_ecosystem_health_check()
+    registry = manager.agent_registry.get_registry_status()
+    agents_health = await manager.agent_registry.health_check_all_agents()
+    dispatcher_ready = manager.mcp_dispatcher is not None
+    healthy = bool(registry.get("initialized")) and bool(agents_health.get("overall_healthy")) and dispatcher_ready
+    health = {
+        "healthy": healthy,
+        "components": {
+            "agent_registry": {"status": "healthy" if registry.get("initialized") else "unhealthy"},
+            "agents": agents_health,
+            "mcp_dispatcher": {"status": "healthy" if dispatcher_ready else "unhealthy"},
+        },
+    }
     return {
         "initialized": manager.initialized,
         "agents": manager.agent_registry.list_agents(),
