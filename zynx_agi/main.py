@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import logging
 import asyncio
+import os
 from .config.settings import settings
 from .agents.zynx_metadata import observe_interaction
 
@@ -36,16 +37,44 @@ def register_routers():
         from .api.chat import router as chat_router
         from .api.cultural import router as cultural_router
         from .api.metadata import router as metadata_router
+        from .api.agent_bridge import router as agent_bridge_router
         
         app.include_router(chat_router)
         app.include_router(cultural_router)
         app.include_router(metadata_router)
+        app.include_router(agent_bridge_router)
         logger.info("API routers registered successfully")
     except Exception as e:
         logger.warning(f"Some API routers could not be registered: {e}")
 
 # Register routers
 register_routers()
+
+@app.on_event("startup")
+async def initialize_agent_bridge():
+    """Opt-in initialization of the existing ZynxAGI agent registry and MCP dispatcher."""
+    if os.getenv("ZYNXAGI_ENABLE_AGENT_BRIDGE", "false").lower() != "true":
+        logger.info("ZynxAGI Agent Bridge disabled (set ZYNXAGI_ENABLE_AGENT_BRIDGE=true to enable)")
+        return
+    if not os.getenv("ZYNXAGI_AGENT_API_TOKEN"):
+        raise RuntimeError("ZYNXAGI_AGENT_API_TOKEN is required when the Agent Bridge is enabled")
+    from .ecosystem.ecosystem_manager import EcosystemManager
+    manager = EcosystemManager(config={
+        "deployment_mode": "local",
+        "storage_path": os.getenv("ZYNXAGI_AGENT_STORAGE_PATH", "./storage/agent-bridge"),
+        "encryption_key": settings.SECRET_KEY,
+    })
+    if not await manager.initialize_ecosystem():
+        raise RuntimeError("ZynxAGI ecosystem initialization failed; Agent Bridge will not start")
+    app.state.ecosystem_manager = manager
+    logger.info("ZynxAGI Agent Bridge initialized with MCPDispatcher")
+
+
+@app.on_event("shutdown")
+async def shutdown_agent_bridge():
+    manager = getattr(app.state, "ecosystem_manager", None)
+    if manager is not None:
+        await manager.shutdown_ecosystem()
 
 # --- SERVE REACT APP ---
 # Mount the React frontend static files
