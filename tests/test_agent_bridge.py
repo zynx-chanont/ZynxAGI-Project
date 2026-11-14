@@ -48,3 +48,38 @@ def test_agent_bridge_rejects_unsupported_action(monkeypatch):
             headers={"X-ZynxAGI-Token":"bridge-secret"},
             json={"agent_id":"deeja","action":"delete","message":"not allowed"})
         assert response.status_code==422
+
+def test_real_ecosystem_manager_dispatches_all_three_specialists(tmp_path):
+    import asyncio
+    from cryptography.fernet import Fernet
+    from zynx_agi.ecosystem.ecosystem_manager import EcosystemManager
+
+    async def exercise():
+        manager = EcosystemManager(config={
+            "deployment_mode": "local",
+            "storage_path": str(tmp_path / "ecosystem-storage"),
+            "encryption_key": Fernet.generate_key().decode("ascii"),
+        })
+        assert await manager.initialize_ecosystem() is True
+        try:
+            deeja = await manager.process_request({"message": "/deeja:analyze สวัสดีค่ะ"})
+            assert deeja["success"] is True
+            assert deeja["agent_id"] == "deeja"
+            assert deeja["response"]["language_detected"] == "thai"
+
+            zynx = await manager.process_request({"message": "/zynx:chat Hello Zynx"})
+            assert zynx["success"] is True
+            assert zynx["agent_id"] == "zynx_main"
+            assert "Hello Zynx" in zynx["response"]["message"]
+
+            metadata = await manager.process_request({
+                "message": "/metadata:compliance Check sample metadata",
+                "data": {"content": "sample metadata"},
+            })
+            assert metadata["success"] is True
+            assert metadata["agent_id"] == "zynx_metadata"
+            assert "overall_compliant" in metadata["response"]
+        finally:
+            await manager.shutdown_ecosystem()
+
+    asyncio.run(exercise())
