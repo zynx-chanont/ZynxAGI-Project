@@ -14,6 +14,7 @@ class FakeRegistry:
 class FakeManager:
     initialized=True
     agent_registry=FakeRegistry()
+    mcp_dispatcher=object()
     async def _perform_ecosystem_health_check(self):
         return {"healthy":True,"components":{"mcp_dispatcher":{"status":"healthy"}}}
     async def process_request(self,request):
