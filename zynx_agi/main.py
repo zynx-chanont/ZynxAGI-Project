@@ -4,6 +4,9 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import logging
 import asyncio
+import os
+import base64
+import hashlib
 from .config.settings import settings
 from .agents.zynx_metadata import observe_interaction
 
@@ -43,9 +46,45 @@ def register_routers():
         logger.info("API routers registered successfully")
     except Exception as e:
         logger.warning(f"Some API routers could not be registered: {e}")
+    try:
+        from .api.agent_bridge import router as agent_bridge_router
+        app.include_router(agent_bridge_router)
+        logger.info("Authenticated Agent Bridge router registered")
+    except Exception as e:
+        logger.warning(f"Agent Bridge router could not be registered: {e}")
 
 # Register routers
 register_routers()
+
+@app.on_event("startup")
+async def initialize_agent_bridge():
+    """Opt-in initialization of the existing ZynxAGI agent registry and MCP dispatcher."""
+    if os.getenv("ZYNXAGI_ENABLE_AGENT_BRIDGE", "false").lower() != "true":
+        logger.info("ZynxAGI Agent Bridge disabled (set ZYNXAGI_ENABLE_AGENT_BRIDGE=true to enable)")
+        return
+    if not os.getenv("ZYNXAGI_AGENT_API_TOKEN"):
+        raise RuntimeError("ZYNXAGI_AGENT_API_TOKEN is required when the Agent Bridge is enabled")
+    storage_secret = os.getenv("ZYNXAGI_AGENT_STORAGE_KEY")
+    if not storage_secret:
+        raise RuntimeError("ZYNXAGI_AGENT_STORAGE_KEY is required when the Agent Bridge is enabled")
+    from .ecosystem.ecosystem_manager import EcosystemManager
+    fernet_key = base64.urlsafe_b64encode(hashlib.sha256(storage_secret.encode("utf-8")).digest()).decode("ascii")
+    manager = EcosystemManager(config={
+        "deployment_mode": "local",
+        "storage_path": os.getenv("ZYNXAGI_AGENT_STORAGE_PATH", "./storage/agent-bridge"),
+        "encryption_key": fernet_key,
+    })
+    if not await manager.initialize_ecosystem():
+        raise RuntimeError("ZynxAGI ecosystem initialization failed; Agent Bridge will not start")
+    app.state.ecosystem_manager = manager
+    logger.info("ZynxAGI Agent Bridge initialized with MCPDispatcher")
+
+
+@app.on_event("shutdown")
+async def shutdown_agent_bridge():
+    manager = getattr(app.state, "ecosystem_manager", None)
+    if manager is not None:
+        await manager.shutdown_ecosystem()
 
 # --- SERVE REACT APP ---
 # Mount the React frontend static files

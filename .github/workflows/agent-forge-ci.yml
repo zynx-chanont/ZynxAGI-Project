@@ -1,0 +1,87 @@
+name: Agent Forge verification
+on:
+  pull_request:
+    paths:
+      - "apps/agent-forge/**"
+      - "zynx_agi/**"
+      - ".github/workflows/agent-forge-ci.yml"
+  push:
+    branches: ["feat/agent-forge-monorepo"]
+    paths:
+      - "apps/agent-forge/**"
+      - "zynx_agi/**"
+      - ".github/workflows/agent-forge-ci.yml"
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/agent-forge
+    env:
+      PYTHONPATH: ${{ github.workspace }}/apps/agent-forge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -q
+      - run: python -m compileall -q agent_forge
+  dashboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/agent-forge/dashboard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: npm install
+      - run: npm run build
+  container-hardening:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/agent-forge
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose configuration
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+      - name: Build hardened container
+        run: docker compose build
+      - name: Verify runtime security and fail-closed API
+        run: |
+          set -euo pipefail
+          docker compose up -d
+          cleanup() { docker compose down -v; }
+          trap cleanup EXIT
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:8090/health >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl --silent --show-error --fail http://127.0.0.1:8090/health
+          status=$(curl --silent --output /dev/null --write-out "%{http_code}" http://127.0.0.1:8090/api/projects)
+          test "$status" = "503"
+          readonly_root=$(docker inspect --format='{{.HostConfig.ReadonlyRootfs}}' zynx-agent-forge)
+          test "$readonly_root" = "true"
+          cap_drop=$(docker inspect --format='{{json .HostConfig.CapDrop}}' zynx-agent-forge)
+          echo "$cap_drop" | grep -q '"ALL"'
+          security_opts=$(docker inspect --format='{{json .HostConfig.SecurityOpt}}' zynx-agent-forge)
+          echo "$security_opts" | grep -q 'no-new-privileges'
+  zynxagi-agent-bridge:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install fastapi uvicorn pydantic httpx pytest python-jose[cryptography] passlib[bcrypt] python-multipart requests python-dotenv sqlalchemy cryptography aiohttp pytz
+      - run: pytest -q tests/test_agent_bridge.py tests/test_mcp_dispatcher_slash_command.py
+      - run: python -m compileall -q zynx_agi

@@ -205,11 +205,13 @@ class MCPDispatcher:
             capability = self._map_action_to_capability(command["action"])
             
             if capability:
-                return await agent.execute_capability(capability, {
-                    "message": request.get("message", ""),
+                capability_request = {
+                    **request,
+                    "command": request.get("message", ""),
+                    "message": command["params"] or request.get("message", ""),
                     "params": command["params"],
-                    **request
-                })
+                }
+                return await agent.execute_capability(capability, capability_request)
         
         # Otherwise, process as general request
         return await agent.process_request(request)

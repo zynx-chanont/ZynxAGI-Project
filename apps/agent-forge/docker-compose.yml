@@ -1,0 +1,31 @@
+services:
+  agent-forge:
+    build: .
+    container_name: zynx-agent-forge
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+      TMPDIR: /tmp
+    ports:
+      # Host-loopback only: Cloudflare Tunnel or a local reverse proxy can reach this.
+      # Never bind the API to 0.0.0.0 on the VM's public interface.
+      - "127.0.0.1:8090:8090"
+    volumes:
+      - agent_forge_data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+volumes:
+  agent_forge_data:
