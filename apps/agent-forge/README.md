@@ -9,6 +9,11 @@ Independent orchestration control plane inside the ZynxAGI monorepo. It has its 
 - MCP server exposing scoped project/run/approval tools.
 - React operations dashboard.
 
+## ZynxAGI bridge configuration
+Enable the bridge in the ZynxAGI service environment with `ZYNXAGI_ENABLE_AGENT_BRIDGE=true`. Set the same high-entropy `ZYNXAGI_AGENT_API_TOKEN` in both services. Also set `ZYNXAGI_AGENT_STORAGE_KEY` only on ZynxAGI to a separate high-entropy secret; the bridge derives a Fernet-compatible encryption key from it. Restart ZynxAGI and confirm `GET /api/v1/agents/status` reports all three initialized agents before submitting tasks. Keep both services on a private network and do not expose the bridge directly to the public internet.
+
+Agent dispatch uses ZynxAGI's existing `EcosystemManager.process_request()` → `MCPDispatcher.dispatch_request()` path. Slash-command payloads are parsed into the actual specialist message before capability execution.
+
 ## Local development
 ```bash
 cd apps/agent-forge
