@@ -1,0 +1,12 @@
+services:
+  agent-forge:
+    build: .
+    container_name: zynx-agent-forge
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8090:8090"
+    volumes:
+      - agent_forge_data:/data
+volumes:
+  agent_forge_data:
