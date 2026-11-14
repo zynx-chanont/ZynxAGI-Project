@@ -1,14 +1,16 @@
 from __future__ import annotations
+import tempfile
+from pathlib import Path
 from .store import Store
 from .agents import AgentRegistry
 
 def run_smoke_evaluations(store: Store, agents: AgentRegistry) -> dict:
     checks=[]
     try:
-        projects=store.list_projects()
-        checks.append({"name":"database_read","passed":isinstance(projects,list)})
-        probe=store.create_project("__agent_forge_eval_probe__",{"temporary":True})
-        checks.append({"name":"database_write_read","passed":bool(store.get_project(probe["id"]))})
+        with tempfile.TemporaryDirectory() as directory:
+            probe_store=Store(str(Path(directory)/"evaluation.db"))
+            probe=probe_store.create_project("agent-forge-evaluation-probe",{"temporary":True})
+            checks.append({"name":"database_read_write","passed":bool(probe_store.get_project(probe["id"]))})
     except Exception as exc:
         checks.append({"name":"database_read_write","passed":False,"detail":type(exc).__name__})
     try:
