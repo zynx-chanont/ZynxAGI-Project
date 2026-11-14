@@ -37,15 +37,19 @@ def register_routers():
         from .api.chat import router as chat_router
         from .api.cultural import router as cultural_router
         from .api.metadata import router as metadata_router
-        from .api.agent_bridge import router as agent_bridge_router
         
         app.include_router(chat_router)
         app.include_router(cultural_router)
         app.include_router(metadata_router)
-        app.include_router(agent_bridge_router)
         logger.info("API routers registered successfully")
     except Exception as e:
         logger.warning(f"Some API routers could not be registered: {e}")
+    try:
+        from .api.agent_bridge import router as agent_bridge_router
+        app.include_router(agent_bridge_router)
+        logger.info("Authenticated Agent Bridge router registered")
+    except Exception as e:
+        logger.warning(f"Agent Bridge router could not be registered: {e}")
 
 # Register routers
 register_routers()
