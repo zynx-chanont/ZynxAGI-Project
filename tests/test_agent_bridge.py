@@ -16,6 +16,8 @@ class FakeManager:
         assert request["message"].startswith("/deeja:chat ")
         assert request["agent_forge_input"]=="สวัสดี"
         return {"success":True,"response":{"text":"hello"},"agent_id":"deeja","metadata":{}}
+    async def shutdown_ecosystem(self):
+        return None
 
 def test_agent_bridge_requires_service_token(monkeypatch):
     monkeypatch.setenv("ZYNXAGI_AGENT_API_TOKEN","bridge-secret")
