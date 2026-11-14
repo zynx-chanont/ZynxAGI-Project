@@ -201,7 +201,7 @@ class LocalStorageDriver(StorageDriver):
                     continue
 
         while current_date <= end_time.date():
-            log_file = self.logs_path / f"{current_date.strftime('%Y-%m-%d')}.jsonl'
+            log_file = self.logs_path / f"{current_date.strftime('%Y-%m-%d')}.jsonl"
             if log_file.exists():
                 if AIOFILES_AVAILABLE:
                     async with aiofiles.open(log_file, 'r', encoding='utf-8') as f:
