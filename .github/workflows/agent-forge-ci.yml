@@ -17,6 +17,8 @@ jobs:
     defaults:
       run:
         working-directory: apps/agent-forge
+    env:
+      PYTHONPATH: ${{ github.workspace }}/apps/agent-forge
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,6 +41,8 @@ jobs:
       - run: npm run build
   zynxagi-agent-bridge:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
