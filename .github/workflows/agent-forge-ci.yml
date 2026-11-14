@@ -49,5 +49,5 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install fastapi uvicorn pydantic httpx pytest python-jose[cryptography] passlib[bcrypt] python-multipart requests python-dotenv sqlalchemy cryptography aiohttp pytz
-      - run: pytest -q tests/test_agent_bridge.py
+      - run: pytest -q tests/test_agent_bridge.py tests/test_mcp_dispatcher_slash_command.py
       - run: python -m compileall -q zynx_agi
