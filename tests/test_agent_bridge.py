@@ -6,6 +6,10 @@ class FakeRegistry:
         return [{"agent_id":"deeja","active":True,"capabilities":["chat"]}]
     def list_capabilities(self):
         return {"chat":["deeja"]}
+    def get_registry_status(self):
+        return {"initialized":True}
+    async def health_check_all_agents(self):
+        return {"overall_healthy":True}
 
 class FakeManager:
     initialized=True
