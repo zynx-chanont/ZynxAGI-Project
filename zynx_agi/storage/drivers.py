@@ -169,39 +169,48 @@ class LocalStorageDriver(StorageDriver):
         log_hash = self._generate_hash(log_data)
         log_entry["hash"] = log_hash
         
-        # Store in daily log file
+        # Store in daily log file. Keep a synchronous fallback when aiofiles
+        # is not installed so the documented minimal runtime can still start.
         log_file = self.logs_path / f"{timestamp.strftime('%Y-%m-%d')}.jsonl"
-        async with aiofiles.open(log_file, 'a', encoding='utf-8') as f:
-            await f.write(json.dumps(log_entry, ensure_ascii=False) + '\n')
-        
+        serialized = json.dumps(log_entry, ensure_ascii=False) + '\n'
+        if AIOFILES_AVAILABLE:
+            async with aiofiles.open(log_file, 'a', encoding='utf-8') as f:
+                await f.write(serialized)
+        else:
+            with open(log_file, 'a', encoding='utf-8') as f:
+                f.write(serialized)
+
         return log_hash
-    
+
     async def get_logs(self, start_time: datetime, end_time: datetime) -> List[Dict[str, Any]]:
         """Retrieve logs within time range"""
         logs = []
         current_date = start_time.date()
-        
+
+        def collect(lines):
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    log_entry = json.loads(line)
+                    entry_time = datetime.fromisoformat(log_entry["timestamp"])
+                    if start_time <= entry_time <= end_time:
+                        logs.append(log_entry)
+                except (json.JSONDecodeError, KeyError, ValueError):
+                    continue
+
         while current_date <= end_time.date():
-            log_file = self.logs_path / f"{current_date.strftime('%Y-%m-%d')}.jsonl"
-            
+            log_file = self.logs_path / f"{current_date.strftime('%Y-%m-%d')}.jsonl'
             if log_file.exists():
-                async with aiofiles.open(log_file, 'r', encoding='utf-8') as f:
-                    async for line in f:
-                        line = line.strip()
-                        if not line:
-                            continue
-                        try:
-                            log_entry = json.loads(line)
-                            entry_time = datetime.fromisoformat(log_entry["timestamp"])
-                            
-                            if start_time <= entry_time <= end_time:
-                                logs.append(log_entry)
-                        except (json.JSONDecodeError, KeyError, ValueError):
-                            continue
-            
-            # Move to next day
+                if AIOFILES_AVAILABLE:
+                    async with aiofiles.open(log_file, 'r', encoding='utf-8') as f:
+                        collect([line async for line in f])
+                else:
+                    with open(log_file, 'r', encoding='utf-8') as f:
+                        collect(f)
             current_date = current_date + timedelta(days=1)
-        
+
         return sorted(logs, key=lambda x: x["timestamp"])
 
 
