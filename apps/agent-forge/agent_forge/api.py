@@ -8,6 +8,7 @@ from .store import Store
 from .agents import AgentRegistry
 from .routing import ModelRouter
 from .orchestrator import Orchestrator
+from .evaluations import run_smoke_evaluations
 
 store=Store(); agents=AgentRegistry(); router=ModelRouter(); orchestrator=Orchestrator(store,agents,router)
 def authorize(x_agent_forge_token:str|None):
@@ -100,6 +101,4 @@ async def audit(x_agent_forge_token:str|None=Header(default=None)):
     authorize(x_agent_forge_token); return {"events":store.list_audit()}
 @app.post("/api/evaluations/run")
 async def evaluate(x_agent_forge_token:str|None=Header(default=None)):
-    authorize(x_agent_forge_token)
-    checks=[{"name":"database_read_write","passed":bool(store.list_projects()) or True},{"name":"agent_registry_loaded","passed":len(agents.list())>=3},{"name":"approval_state_machine","passed":True}]
-    return {"status":"passed" if all(x["passed"] for x in checks) else "failed","checks":checks,"note":"Smoke checks only; task-quality evaluations require a configured benchmark dataset."}
+    authorize(x_agent_forge_token); return run_smoke_evaluations(store,agents)
