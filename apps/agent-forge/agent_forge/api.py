@@ -21,28 +21,29 @@ async def lifespan(app:FastAPI):
     yield
 
 app=FastAPI(title="Zynx Agent Forge",version="0.1.0",lifespan=lifespan)
-app.add_middleware(CORSMiddleware,allow_origins=os.getenv("AGENT_FORGE_CORS","http://localhost:5173").split(","),allow_methods=["*"],allow_headers=["*"])
+app.add_middleware(CORSMiddleware,allow_origins=os.getenv("AGENT_FORGE_CORS","http://localhost:5173").split(","),allow_methods=["GET","POST","PUT"],allow_headers=["Content-Type","X-Agent-Forge-Token"])
 
 class ProjectIn(BaseModel):
     name:str=Field(min_length=1,max_length=120)
-    context:dict={}
+    context:dict=Field(default_factory=dict)
 class ContextIn(BaseModel): context:dict
 class RunIn(BaseModel):
     project_id:str
     task:str=Field(min_length=1,max_length=12000)
     agent_id:str="zynx_main"
+    action:str|None=None
     provider:str|None=None
 class ApprovalIn(BaseModel):
     run_id:str
     action:str
-    payload:dict={}
+    payload:dict=Field(default_factory=dict)
 class DecisionIn(BaseModel):
     decision:str
     reviewer:str="operator"
 class MemoryIn(BaseModel):
     kind:str="note"
     content:str=Field(min_length=1,max_length=12000)
-    metadata:dict={}
+    metadata:dict=Field(default_factory=dict)
 
 @app.get("/health")
 async def health(): return {"status":"ok","service":"zynx-agent-forge","version":"0.1.0"}
@@ -67,7 +68,7 @@ async def put_context(pid:str,body:ContextIn,x_agent_forge_token:str|None=Header
 @app.post("/api/runs")
 async def create_run(body:RunIn,x_agent_forge_token:str|None=Header(default=None)):
     authorize(x_agent_forge_token)
-    try: return await orchestrator.submit(body.project_id,body.task,body.agent_id,body.provider)
+    try: return await orchestrator.submit(body.project_id,body.task,body.agent_id,body.provider,body.action)
     except ValueError as e: raise HTTPException(400,str(e))
 @app.get("/api/runs")
 async def get_runs(x_agent_forge_token:str|None=Header(default=None)):
@@ -95,7 +96,9 @@ async def add_memory(pid:str,body:MemoryIn,x_agent_forge_token:str|None=Header(d
     return store.add_memory(pid,body.kind,body.content,body.metadata)
 @app.get("/api/projects/{pid}/memory")
 async def search_memory(pid:str,q:str="",x_agent_forge_token:str|None=Header(default=None)):
-    authorize(x_agent_forge_token); return {"memories":store.search_memory(pid,q)}
+    authorize(x_agent_forge_token)
+    if not store.get_project(pid): raise HTTPException(404,"Project not found")
+    return {"memories":store.search_memory(pid,q)}
 @app.get("/api/audit")
 async def audit(x_agent_forge_token:str|None=Header(default=None)):
     authorize(x_agent_forge_token); return {"events":store.list_audit()}
