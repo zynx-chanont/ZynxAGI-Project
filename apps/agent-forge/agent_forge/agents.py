@@ -5,7 +5,7 @@ import httpx
 class AgentRegistry:
     """HTTP adapter for the authenticated ZynxAGI MCPDispatcher bridge."""
     def __init__(self):
-        self.base=os.getenv("ZYNXAGI_BASE_URL","http://127.0.0.1:8000").rstrip("/")
+        self.base=os.getenv("ZYNXAGI_BASE_URL","").strip().rstrip("/")
         self.token=os.getenv("ZYNXAGI_AGENT_API_TOKEN","")
         self.timeout=httpx.Timeout(45,connect=5)
         self.agents={
@@ -20,6 +20,8 @@ class AgentRegistry:
             raise RuntimeError("ZYNXAGI_AGENT_API_TOKEN is not configured")
         return {"X-ZynxAGI-Token":self.token}
     async def health(self):
+        if not self.base:
+            return {"zynxagi":"not_configured","detail":"ZYNXAGI_BASE_URL is missing"}
         if not self.token:
             return {"zynxagi":"not_configured","detail":"ZYNXAGI_AGENT_API_TOKEN is missing"}
         try:
@@ -38,6 +40,8 @@ class AgentRegistry:
     async def dispatch(self,agent_id:str,task:str,context:dict,action:str|None=None):
         if agent_id not in self.agents:
             raise ValueError("Unknown specialist agent")
+        if not self.base:
+            raise RuntimeError("ZYNXAGI_BASE_URL is not configured")
         selected_action=action or ("compliance" if agent_id=="zynx_metadata" else "chat")
         if selected_action not in self.agents[agent_id]["actions"]:
             raise ValueError(f"Unsupported action '{selected_action}' for {agent_id}")
