@@ -5,6 +5,8 @@ import uvicorn
 import logging
 import asyncio
 import os
+import base64
+import hashlib
 from .config.settings import settings
 from .agents.zynx_metadata import observe_interaction
 
@@ -62,11 +64,15 @@ async def initialize_agent_bridge():
         return
     if not os.getenv("ZYNXAGI_AGENT_API_TOKEN"):
         raise RuntimeError("ZYNXAGI_AGENT_API_TOKEN is required when the Agent Bridge is enabled")
+    storage_secret = os.getenv("ZYNXAGI_AGENT_STORAGE_KEY")
+    if not storage_secret:
+        raise RuntimeError("ZYNXAGI_AGENT_STORAGE_KEY is required when the Agent Bridge is enabled")
     from .ecosystem.ecosystem_manager import EcosystemManager
+    fernet_key = base64.urlsafe_b64encode(hashlib.sha256(storage_secret.encode("utf-8")).digest()).decode("ascii")
     manager = EcosystemManager(config={
         "deployment_mode": "local",
         "storage_path": os.getenv("ZYNXAGI_AGENT_STORAGE_PATH", "./storage/agent-bridge"),
-        "encryption_key": settings.SECRET_KEY,
+        "encryption_key": fernet_key,
     })
     if not await manager.initialize_ecosystem():
         raise RuntimeError("ZynxAGI ecosystem initialization failed; Agent Bridge will not start")
