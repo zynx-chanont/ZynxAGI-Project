@@ -3,23 +3,49 @@ import os
 import httpx
 
 class AgentRegistry:
+    """HTTP adapter for the authenticated ZynxAGI MCPDispatcher bridge."""
     def __init__(self):
+        self.base=os.getenv("ZYNXAGI_BASE_URL","http://127.0.0.1:8000").rstrip("/")
+        self.token=os.getenv("ZYNXAGI_AGENT_API_TOKEN","")
+        self.timeout=httpx.Timeout(45,connect=5)
         self.agents={
-            "zynx_main":{"kind":"http","base":os.getenv("ZYNXAGI_BASE_URL","http://127.0.0.1:8000"),"description":"ZynxAGI main ecosystem adapter"},
-            "deeja":{"kind":"http","base":os.getenv("ZYNXAGI_BASE_URL","http://127.0.0.1:8000"),"description":"Deeja specialist via ZynxAGI"},
-            "zynx_metadata":{"kind":"http","base":os.getenv("ZYNXAGI_BASE_URL","http://127.0.0.1:8000"),"description":"Metadata and compliance specialist"}
+            "zynx_main":{"kind":"zynxagi_mcp","description":"Zynx Main Agent via existing MCPDispatcher","actions":["chat","session","compliance"]},
+            "deeja":{"kind":"zynxagi_mcp","description":"Deeja Agent via existing MCPDispatcher","actions":["chat","analyze","cultural","emotional","empathy","translate"]},
+            "zynx_metadata":{"kind":"zynxagi_mcp","description":"Zynx Metadata Agent via existing MCPDispatcher","actions":["metadata","compliance","session"]}
         }
-    def list(self): return [{"id":k,**v} for k,v in self.agents.items()]
+    def list(self):
+        return [{"id":key,**value} for key,value in self.agents.items()]
+    def _headers(self):
+        if not self.token:
+            raise RuntimeError("ZYNXAGI_AGENT_API_TOKEN is not configured")
+        return {"X-ZynxAGI-Token":self.token}
     async def health(self):
-        base=os.getenv("ZYNXAGI_BASE_URL","http://127.0.0.1:8000")
+        if not self.token:
+            return {"zynxagi":"not_configured","detail":"ZYNXAGI_AGENT_API_TOKEN is missing"}
         try:
-            async with httpx.AsyncClient(timeout=3) as c:
-                r=await c.get(base.rstrip("/")+"/health")
-                return {"zynxagi":"healthy" if r.is_success else "unavailable","http_status":r.status_code}
-        except Exception as e: return {"zynxagi":"unavailable","detail":type(e).__name__}
-    async def dispatch(self,agent_id:str,task:str,context:dict):
-        if agent_id not in self.agents: raise ValueError("Unknown specialist agent")
-        # Adapter intentionally does not guess the legacy request schema. Until a
-        # verified endpoint contract is configured, return an explicit integration status.
-        base=self.agents[agent_id]["base"]
-        return {"status":"adapter_ready_contract_unverified","agent_id":agent_id,"base_url":base,"task_preview":task[:160],"context_keys":list(context.keys()),"next_step":"Verify ZynxAGI agent endpoint contract before enabling live dispatch."}
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response=await client.get(self.base+"/api/v1/agents/status",headers=self._headers())
+                if response.status_code==200:
+                    data=response.json()
+                    return {"zynxagi":"healthy" if data.get("initialized") else "degraded",
+                            "initialized":data.get("initialized",False),
+                            "agents":data.get("agents",[]),
+                            "capabilities":data.get("capabilities",{})}
+                return {"zynxagi":"unavailable","http_status":response.status_code}
+        except Exception as exc:
+            return {"zynxagi":"unavailable","detail":type(exc).__name__}
+    async def dispatch(self,agent_id:str,task:str,context:dict,action:str|None=None):
+        if agent_id not in self.agents:
+            raise ValueError("Unknown specialist agent")
+        selected_action=action or ("compliance" if agent_id=="zynx_metadata" else "chat")
+        if selected_action not in self.agents[agent_id]["actions"]:
+            raise ValueError(f"Unsupported action '{selected_action}' for {agent_id}")
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            response=await client.post(self.base+"/api/v1/agents/dispatch",
+                headers=self._headers(),
+                json={"agent_id":agent_id,"action":selected_action,"message":task,"payload":context})
+            response.raise_for_status()
+            data=response.json()
+        if data.get("status")!="dispatched" or not data.get("success"):
+            raise RuntimeError("ZynxAGI did not confirm successful dispatch")
+        return data
