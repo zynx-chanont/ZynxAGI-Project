@@ -76,3 +76,4 @@ zynx_logs_*/
 *.zynx_metadata
 *.zynx_manifest 
 
+node_modules
