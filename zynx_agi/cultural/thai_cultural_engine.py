@@ -466,4 +466,7 @@ class ThaiCulturalEngine:
                 "detected_particles": particles,
                 "cultural_patterns": list(cultural_patterns.keys())
             }
-        } 
+        }
+
+    # Compatibility alias for callers expecting process_message()
+    process_message = process

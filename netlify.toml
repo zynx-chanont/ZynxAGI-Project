@@ -1,0 +1,32 @@
+# Netlify Build Configuration for ZYNX AGI Frontend
+# Note: Do not install or enable netlify-plugin-visual-diff (Applitools) unless
+# APPLITOOLS_API_KEY is explicitly configured in Netlify environment variables.
+# If visual diff testing is not required, disable the plugin in:
+# Netlify UI -> Site configuration -> Build & deploy -> Build plugins.
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
