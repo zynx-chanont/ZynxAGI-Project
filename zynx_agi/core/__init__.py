@@ -7,6 +7,17 @@ This package provides core functionality including:
 - Schema Lock for metadata schema locking and attribution
 """
 
+from .engines import (
+    BaseZynxEngine,
+    ChanontTheoryEngine,
+    EngineDescriptor,
+    EvolutionEngine,
+    IntelligenceEngine,
+    ReasoningEngine,
+    StrategyEngine,
+    ZynxCoreRegistry,
+    core_registry,
+)
 from .schema_lock import (
     MetadataSchemaLock,
     AttributionManager,
@@ -19,6 +30,15 @@ from .schema_lock import (
 )
 
 __all__ = [
+    "BaseZynxEngine",
+    "ChanontTheoryEngine",
+    "EngineDescriptor",
+    "EvolutionEngine",
+    "IntelligenceEngine",
+    "ReasoningEngine",
+    "StrategyEngine",
+    "ZynxCoreRegistry",
+    "core_registry",
     "MetadataSchemaLock",
     "AttributionManager",
     "AttributionInfo",

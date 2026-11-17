@@ -1,192 +1,301 @@
+import asyncio
+import logging
+import time
+from typing import Any, Dict, List, Literal, Optional
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 import uvicorn
-import logging
-import asyncio
-from .config.settings import settings
+
 from .agents.zynx_metadata import observe_interaction
+from .ai_platforms.provider import AIProviderGateway
+from .config.settings import settings
+from .core.engines import core_registry
+from .cultural.thai_cultural_engine import ThaiCulturalEngine
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Shared runtime instances
+cultural_engine = ThaiCulturalEngine()
+ai_gateway = AIProviderGateway(settings)
+
+
+class ChatMessageRequest(BaseModel):
+    """Validated payload for chat message endpoint."""
+
+    model_config = ConfigDict(extra="allow")
+
+    message: str = Field(..., min_length=1, max_length=4000)
+    conversation_history: Optional[List[Dict[str, Any]]] = None
+    cultural_context: Optional[Dict[str, Any]] = None
+    model: Optional[str] = None
+    domain: Optional[str] = "general"
+
+    @field_validator("message")
+    @classmethod
+    def validate_non_empty_message(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("Message cannot be empty or whitespace")
+        return stripped
+
+
+class ChatMessageResponse(BaseModel):
+    """Structured response for chat message endpoint."""
+
+    message: str
+    aiPlatform: str
+    model: str
+    mode: Literal["live", "mock", "fallback"]
+    isMock: bool
+    providerError: Optional[str] = None
+    culturalContext: Dict[str, Any]
+    processingTime: float
+    coreEngines: Dict[str, str]
+    usage: Optional[Dict[str, int]] = None
+
+
+class CulturalAnalyzeRequest(BaseModel):
+    """Validated payload for cultural analysis endpoint."""
+
+    text: str = Field(..., min_length=1, max_length=4000)
+
+    @field_validator("text")
+    @classmethod
+    def validate_non_empty_text(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("Text cannot be empty or whitespace")
+        return stripped
+
+
 # Create FastAPI app
 app = FastAPI(
     title="ZynxAGI",
     description="Universal AI Orchestration Platform with Cultural-Emotional Intelligence",
-    version="1.0.0",
+    version=settings.APP_VERSION,
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
-# CORS middleware
+# CORS middleware: never combine wildcard '*' with allow_credentials=True
+_has_wildcard = "*" in settings.ALLOWED_ORIGINS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=not _has_wildcard,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
 )
 
-# Register API routers after app creation
-def register_routers():
-    """Register API routers"""
+
+def register_routers() -> None:
+    """Register optional modular API routers if dependencies are installed."""
     try:
         from .api.chat import router as chat_router
         from .api.cultural import router as cultural_router
         from .api.metadata import router as metadata_router
-        
+
         app.include_router(chat_router)
         app.include_router(cultural_router)
         app.include_router(metadata_router)
         logger.info("API routers registered successfully")
-    except Exception as e:
-        logger.warning(f"Some API routers could not be registered: {e}")
+    except Exception as exc:
+        logger.warning("Some optional API routers could not be registered: %s", exc)
 
-# Register routers
+
 register_routers()
 
-# --- SERVE REACT APP ---
-# Mount the React frontend static files
-# app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static") # Temporarily commented out for testing
+
+async def _safe_observe_interaction(
+    agent_name: str,
+    user_input: str,
+    agent_response: str,
+    context: Dict[str, Any],
+) -> None:
+    try:
+        await observe_interaction(
+            agent_name=agent_name,
+            user_input=user_input,
+            agent_response=agent_response,
+            context=context,
+        )
+    except Exception as exc:
+        logger.warning("Metadata observer skipped: %s", exc)
+
+
+def _analyze_message_culture(text: str) -> tuple[bool, Dict[str, Any]]:
+    """Compute real rule-based cultural metadata from ThaiCulturalEngine."""
+    is_thai = any(0x0E00 <= ord(char) <= 0x0E7F for char in text)
+    particles, politeness_score = cultural_engine.analyze_polite_particles(text)
+    formality_score = cultural_engine.analyze_formality(text)
+    patterns = cultural_engine.detect_cultural_patterns(text)
+
+    if formality_score >= 0.7:
+        formality_label = "formal"
+    elif formality_score >= 0.4 or particles:
+        formality_label = "semi-formal"
+    else:
+        formality_label = "casual"
+
+    if is_thai and particles:
+        style = "polite_thai"
+    elif is_thai:
+        style = "helpful_thai"
+    else:
+        style = "helpful_international"
+
+    return is_thai, {
+        "primaryCulture": "thai" if is_thai else "international",
+        "language": "th-TH" if is_thai else "en-US",
+        "formalityLevel": formality_label,
+        "formalityScore": round(formality_score, 3),
+        "politenessLevel": round(politeness_score, 3),
+        "culturalMarkers": particles or list(patterns.keys()),
+        "culturalPatterns": list(patterns.keys()),
+        "communicationStyle": style,
+    }
+
 
 @app.get("/")
-async def root():
-    """Root endpoint"""
-    try:
-        return {
-            "message": "Welcome to ZynxAGI - Universal AI Orchestration Platform",
-            "version": "1.0.0",
-            "cultural_intelligence": "Thai-English Bridge Active",
-            "status": "operational",
-            "docs": "/docs",
-            "emoji": "🚀"
-        }
-    except Exception as e:
-        logger.error(f"Error in root endpoint: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+async def root() -> Dict[str, Any]:
+    """Root endpoint."""
+    provider_cfg = ai_gateway.resolve_configuration()
+    return {
+        "message": "Welcome to ZynxAGI - Universal AI Orchestration Platform",
+        "version": settings.APP_VERSION,
+        "cultural_intelligence": "Thai-English Bridge Active",
+        "status": "operational",
+        "mode": "live" if provider_cfg.configured else "mock",
+        "docs": "/docs",
+    }
+
+
+def _build_health_payload() -> Dict[str, Any]:
+    provider_cfg = ai_gateway.resolve_configuration()
+    return {
+        "status": "healthy",
+        "app": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+        "mode": "live" if provider_cfg.configured else "mock",
+        "ai_provider": {
+            "provider": provider_cfg.provider,
+            "model": provider_cfg.model,
+            "configured": provider_cfg.configured,
+        },
+        "components": {
+            "api": "healthy",
+            "cultural_intelligence": "ready",
+            "universal_dispatcher": "ready",
+            "ai_gateway": "live" if provider_cfg.configured else "mock_mode",
+        },
+        "core_engines": core_registry.status_summary(),
+        "message": "ZynxAGI is running successfully!",
+        "thai_message": "ระบบ ZynxAGI ทำงานปกติค่ะ!",
+    }
+
 
 @app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    try:
-        return {
-            "status": "healthy",
-            "app": "ZynxAGI",
-            "version": "1.0.0",
-            "components": {
-                "api": "healthy",
-                "cultural_intelligence": "ready",
-                "universal_dispatcher": "ready"
-            },
-            "message": "ZynxAGI is running successfully! 🌟",
-            "thai_message": "ระบบ ZynxAGI ทำงานปกติค่ะ! 🇹🇭"
-        }
-    except Exception as e:
-        logger.error(f"Error in health check: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+async def health_check() -> Dict[str, Any]:
+    """Health check endpoint."""
+    return _build_health_payload()
 
-# Chat endpoint for testing
-@app.post("/api/v1/chat/message")
-async def chat_message(request: dict):
-    """Chat endpoint for testing Frontend integration"""
+
+@app.get("/api/v1/health")
+async def api_v1_health_check() -> Dict[str, Any]:
+    """Versioned health check endpoint for frontend clients."""
+    return _build_health_payload()
+
+
+@app.post("/api/v1/chat/message", response_model=ChatMessageResponse)
+async def chat_message(request: ChatMessageRequest) -> ChatMessageResponse:
+    """Process a chat message through Cultural Engine and AIProviderGateway."""
+    start_ts = time.perf_counter()
+
     try:
-        message = request.get("message", "")
-        
-        # Detect Thai or English
-        is_thai = any(ord(char) >= 0x0E00 and ord(char) <= 0x0E7F for char in message)
-        
-        if "สวัสดี" in message or "hello" in message.lower() or "hi" in message.lower():
-            if is_thai:
-                response_text = "สวัสดีค่ะ! ยินดีต้อนรับสู่ ZynxAGI 🌟 ฉันคือ Deeja น้องดีจ้าที่จะช่วยคุณเชื่อมต่อกับ AI ที่เหมาะสมที่สุดพร้อมความเข้าใจทางวัฒนธรรม! ระบบกำลังพัฒนาอยู่แต่พร้อมช่วยเหลือคุณแล้วค่ะ ✨"
-                cultural_context = {
-                    "primaryCulture": "thai",
-                    "formalityLevel": "casual",
-                    "politenessLevel": 0.9,
-                    "culturalMarkers": ["ค่ะ", "kreng_jai"],
-                    "communicationStyle": "warm_thai"
-                }
-            else:
-                response_text = "Hello! Welcome to ZynxAGI 🌟 I'm Deeja, your cultural-intelligent AI assistant who will help you connect with the most suitable AI while understanding cultural nuances! The system is under development but ready to help you! ✨"
-                cultural_context = {
-                    "primaryCulture": "international",
-                    "formalityLevel": "friendly",
-                    "politenessLevel": 0.7,
-                    "culturalMarkers": [],
-                    "communicationStyle": "warm_international"
-                }
-        else:
-            if is_thai:
-                response_text = f"ขอบคุณสำหรับข้อความ: '{message}' ค่ะ 🙏 ZynxAGI กำลังพัฒนาระบบความฉลาดทางวัฒนธรรมเพื่อเข้าใจการสื่อสารแบบไทยและสากลค่ะ ฉันพร้อมช่วยเหลือคุณ! 🤖💫"
-            else:
-                response_text = f"Thank you for your message: '{message}' 🙏 ZynxAGI is developing cultural intelligence to understand both Thai and international communication styles. I'm here to help! 🤖💫"
-            
-            cultural_context = {
-                "primaryCulture": "thai" if is_thai else "international",
-                "formalityLevel": "casual",
-                "politenessLevel": 0.8 if is_thai else 0.7,
-                "culturalMarkers": ["ค่ะ"] if is_thai else [],
-                "communicationStyle": "helpful_thai" if is_thai else "helpful_international"
-            }
-        
-        # Observer: Track chat interaction
+        is_thai, cultural_context = _analyze_message_culture(request.message)
+        core_statuses = core_registry.status_summary()
+
+        ai_result = await ai_gateway.generate(
+            message=request.message,
+            cultural_context=cultural_context,
+            is_thai=is_thai,
+            conversation_history=request.conversation_history,
+            requested_model=request.model,
+        )
+
+        processing_time = round(time.perf_counter() - start_ts, 4)
+
         asyncio.create_task(
-            observe_interaction(
-                agent_name="deeja_basic",
-                user_input=message,
-                agent_response=response_text,
+            _safe_observe_interaction(
+                agent_name="deeja_gateway",
+                user_input=request.message,
+                agent_response=ai_result.message,
                 context={
                     "endpoint": "/api/v1/chat/message",
                     "language": "thai" if is_thai else "english",
-                    "cultural_context": cultural_context
-                }
+                    "mode": ai_result.mode,
+                    "provider": ai_result.provider,
+                    "cultural_context": cultural_context,
+                },
             )
         )
-        
-        return {
-            "message": response_text,
-            "aiPlatform": "deeja",
-            "culturalContext": cultural_context,
-            "culturalAccuracyScore": 0.95,
-            "emotionalIntelligenceScore": 0.88,
-            "processingTime": 0.5
-        }
-    except Exception as e:
-        logger.error(f"Error in chat message: {str(e)}")
+
+        return ChatMessageResponse(
+            message=ai_result.message,
+            aiPlatform=ai_result.provider,
+            model=ai_result.model,
+            mode=ai_result.mode,  # type: ignore[arg-type]
+            isMock=ai_result.is_mock,
+            providerError=ai_result.error,
+            culturalContext=cultural_context,
+            processingTime=processing_time,
+            coreEngines=core_statuses,
+            usage=ai_result.usage,
+        )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Error in chat message endpoint: %s", type(exc).__name__)
         raise HTTPException(status_code=500, detail="Internal server error")
+
 
 @app.post("/api/v1/cultural/analyze")
-async def cultural_analyze(request: dict):
-    """Cultural analysis endpoint"""
+async def cultural_analyze(request: CulturalAnalyzeRequest) -> Dict[str, Any]:
+    """Cultural analysis endpoint."""
     try:
-        text = request.get("text", "")
-        
-        # Simple but effective cultural analysis
-        is_thai = any(ord(char) >= 0x0E00 and ord(char) <= 0x0E7F for char in text)
-        has_politeness = any(particle in text for particle in ["ครับ", "ค่ะ", "นะ", "จ้ะ"])
-        
+        is_thai, cultural_context = _analyze_message_culture(request.text)
         return {
-            "primaryCulture": "thai" if is_thai else "international",
-            "language": "th-TH" if is_thai else "en-US",
-            "formalityLevel": "formal" if has_politeness else "casual",
-            "politenessLevel": 0.9 if has_politeness else (0.7 if is_thai else 0.6),
-            "culturalMarkers": ["ครับ", "ค่ะ"] if has_politeness else [],
-            "communicationStyle": "thai_polite" if is_thai and has_politeness else ("thai_casual" if is_thai else "international")
+            "primaryCulture": cultural_context["primaryCulture"],
+            "language": cultural_context["language"],
+            "formalityLevel": cultural_context["formalityLevel"],
+            "formalityScore": cultural_context["formalityScore"],
+            "politenessLevel": cultural_context["politenessLevel"],
+            "culturalMarkers": cultural_context["culturalMarkers"],
+            "culturalPatterns": cultural_context["culturalPatterns"],
+            "communicationStyle": cultural_context["communicationStyle"],
+            "isThai": is_thai,
         }
-    except Exception as e:
-        logger.error(f"Error in cultural analyze: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Error in cultural analyze endpoint: %s", type(exc).__name__)
         raise HTTPException(status_code=500, detail="Internal server error")
 
-def start():
-    """Start the server"""
+
+def start() -> None:
+    """Start the server."""
     uvicorn.run(
-        app,
-        host="0.0.0.0",  # Changed from 127.0.0.1 to 0.0.0.0 for production
+        "zynx_agi.main:app",
+        host="0.0.0.0",
         port=8000,
-        reload=True,
-        log_level="info"
+        reload=settings.DEBUG,
+        log_level="info",
     )
 
+
 if __name__ == "__main__":
-    start() 
+    start()

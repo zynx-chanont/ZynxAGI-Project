@@ -1,35 +1,76 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Zap, Globe, Heart, Cpu } from 'lucide-react';
 import { useChat } from '../../hooks/useChat';
 import type { Message } from '../../types/chat';
 import toast from 'react-hot-toast';
 
-// Constants
 const MAX_TEXTAREA_HEIGHT = 120;
 const MIN_TEXTAREA_HEIGHT = 52;
 const ERROR_MESSAGES = {
   SEND_FAILED: 'เกิดข้อผิดพลาดในการส่งข้อความ กรุณาลองใหม่อีกครั้ง',
   NETWORK_ERROR: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต',
   VALIDATION_ERROR: 'กรุณากรอกข้อความก่อนส่ง',
-  UNKNOWN_ERROR: 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง'
+  UNKNOWN_ERROR: 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง',
 } as const;
 
-// Logger utility
 const logger = {
   error: (message: string, error?: unknown) => {
     console.error(`[ChatInterface Error] ${message}`, error);
-    // Here you can add additional logging services like Sentry, LogRocket, etc.
   },
   info: (message: string, data?: unknown) => {
     console.info(`[ChatInterface Info] ${message}`, data);
   },
   warn: (message: string, data?: unknown) => {
     console.warn(`[ChatInterface Warning] ${message}`, data);
-  }
+  },
 };
 
-// Error boundary component
+const GlobeIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
+
+const HeartIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+);
+
+const CpuIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+    <rect x="9" y="9" width="6" height="6" />
+  </svg>
+);
+
+const ZapIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </svg>
+);
+
+const BotIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <rect x="3" y="8" width="18" height="12" rx="2" />
+    <path d="M12 2v6M9 14h.01M15 14h.01" />
+  </svg>
+);
+
+const UserIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
+const SendIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <line x1="22" y1="2" x2="11" y2="13" />
+    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+);
+
 class ChatErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error: Error | null }
@@ -71,7 +112,6 @@ class ChatErrorBoundary extends React.Component<
   }
 }
 
-// Types
 interface HeaderProps {
   title: string;
   subtitle: string;
@@ -87,31 +127,30 @@ interface QuickInfoProps {
   items: QuickInfoItem[];
 }
 
-// Memoized Components
 const Header = memo(({ title, subtitle }: HeaderProps) => (
-  <div className="bg-gradient-to-r from-zynx-blue to-zynx-purple text-white p-6 shadow-lg">
+  <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
     <div className="flex items-center justify-between max-w-7xl mx-auto">
       <div className="flex items-center space-x-4">
         <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-          <Bot className="w-7 h-7" />
+          <BotIcon className="w-7 h-7" />
         </div>
         <div>
           <h1 className="text-2xl font-bold">{title}</h1>
           <p className="text-blue-100 text-sm">{subtitle}</p>
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-6">
         <div className="flex items-center space-x-2 text-blue-100">
-          <Globe className="w-5 h-5" />
+          <GlobeIcon className="w-5 h-5" />
           <span className="text-sm">Thai-English Bridge</span>
         </div>
         <div className="flex items-center space-x-2 text-blue-100">
-          <Heart className="w-5 h-5" />
+          <HeartIcon className="w-5 h-5" />
           <span className="text-sm">Emotional Intelligence</span>
         </div>
         <div className="flex items-center space-x-2 text-blue-100">
-          <Cpu className="w-5 h-5" />
+          <CpuIcon className="w-5 h-5" />
           <span className="text-sm">Multi-AI Orchestration</span>
         </div>
       </div>
@@ -132,7 +171,7 @@ const QuickInfo = memo(({ items }: QuickInfoProps) => (
         );
       })}
     </div>
-    
+
     <div className="text-xs text-gray-400">
       Press Enter to send • Shift+Enter for new line
     </div>
@@ -141,31 +180,27 @@ const QuickInfo = memo(({ items }: QuickInfoProps) => (
 
 const MessageBubble = memo(({ message }: { message: Message }) => {
   const isUser = message.role === 'user';
-  
+
   const aiPlatformColors = {
     claude: 'bg-orange-100 text-orange-800',
     openai: 'bg-green-100 text-green-800',
-    gemini: 'bg-blue-100 text-blue-800',
-    deeja: 'bg-purple-100 text-purple-800'
+    google: 'bg-blue-100 text-blue-800',
+    deeja: 'bg-purple-100 text-purple-800',
+    mock: 'bg-amber-100 text-amber-800',
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
-    >
+    <div className={`flex slide-up ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`max-w-xs lg:max-w-md xl:max-w-2xl ${isUser ? 'order-2' : 'order-1'}`}>
         <div
           className={`px-6 py-4 rounded-2xl ${
             isUser
-              ? 'bg-gradient-to-r from-zynx-blue to-zynx-purple text-white'
+              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
               : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
           }`}
         >
           <div className="whitespace-pre-wrap thai-text leading-relaxed">{message.content}</div>
-          
+
           {!isUser && message.aiPlatform && (
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex items-center justify-between text-xs">
@@ -176,61 +211,46 @@ const MessageBubble = memo(({ message }: { message: Message }) => {
                       'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    {message.aiPlatform?.toUpperCase()}
+                    {message.aiPlatform.toUpperCase()}
                   </span>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  {message.culturalScore && (
-                    <div className="flex items-center space-x-1 text-thai-gold">
-                      <Globe className="w-3 h-3" />
-                      <span className="font-medium">{Math.round(message.culturalScore * 100)}%</span>
-                    </div>
-                  )}
-                  {message.emotionalScore && (
-                    <div className="flex items-center space-x-1 text-pink-600">
-                      <Heart className="w-3 h-3" />
-                      <span className="font-medium">{Math.round(message.emotionalScore * 100)}%</span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
           )}
         </div>
-        
+
         <div className={`text-xs text-gray-500 mt-2 ${isUser ? 'text-right' : 'text-left'}`}>
-          {new Date(message.timestamp).toLocaleTimeString('th-TH', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+          {new Date(message.timestamp).toLocaleTimeString('th-TH', {
+            hour: '2-digit',
+            minute: '2-digit',
           })}
         </div>
       </div>
-      
-      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isUser ? 'order-1 mr-4' : 'order-2 ml-4'}`}>
+
+      <div
+        className={`w-10 h-10 rounded-full flex items-center justify-center ${
+          isUser ? 'order-1 mr-4' : 'order-2 ml-4'
+        }`}
+      >
         {isUser ? (
           <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-            <User className="w-5 h-5 text-white" />
+            <UserIcon className="w-5 h-5 text-white" />
           </div>
         ) : (
           <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
-            <Bot className="w-5 h-5 text-white" />
+            <BotIcon className="w-5 h-5 text-white" />
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 });
 
 const TypingIndicator = memo(() => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="flex justify-start"
-  >
+  <div className="flex justify-start slide-up">
     <div className="flex items-center space-x-4">
       <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
-        <Bot className="w-5 h-5 text-white" />
+        <BotIcon className="w-5 h-5 text-white" />
       </div>
       <div className="bg-white border border-gray-200 rounded-2xl px-6 py-4 shadow-sm">
         <div className="flex space-x-2">
@@ -240,27 +260,24 @@ const TypingIndicator = memo(() => (
         </div>
       </div>
     </div>
-  </motion.div>
+  </div>
 ));
 
 const ChatInterface: React.FC = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { messages, sendMessage, isLoading, error } = useChat();
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     try {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } catch (error) {
-      logger.error('Failed to scroll to bottom', error);
+    } catch (err) {
+      logger.error('Failed to scroll to bottom', err);
     }
   }, [messages]);
 
-  // Auto-resize textarea
   useEffect(() => {
     try {
       const textarea = textareaRef.current;
@@ -268,26 +285,18 @@ const ChatInterface: React.FC = () => {
         textarea.style.height = 'auto';
         textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`;
       }
-    } catch (error) {
-      logger.error('Failed to resize textarea', error);
+    } catch (err) {
+      logger.error('Failed to resize textarea', err);
     }
   }, [inputMessage]);
 
-  // Show error toast if API call fails
   useEffect(() => {
     if (error) {
-      const errorMessage = typeof error === 'string' ? error : ERROR_MESSAGES.UNKNOWN_ERROR;
+      const messageText = typeof error === 'string' ? error : ERROR_MESSAGES.UNKNOWN_ERROR;
       logger.error('API call failed', error);
-      toast.error(errorMessage);
+      toast.error(messageText);
     }
   }, [error]);
-
-  // Reset retry count when message is sent successfully
-  useEffect(() => {
-    if (!isLoading && !error) {
-      setRetryCount(0);
-    }
-  }, [isLoading, error]);
 
   const handleSendMessage = useCallback(async () => {
     if (!inputMessage.trim()) {
@@ -303,74 +312,53 @@ const ChatInterface: React.FC = () => {
 
     try {
       setIsSending(true);
-      logger.info('Sending message', { messageLength: inputMessage.length });
-      
       await sendMessage(inputMessage);
-      
       setInputMessage('');
       if (textareaRef.current) {
         textareaRef.current.style.height = `${MIN_TEXTAREA_HEIGHT}px`;
       }
-      
-      logger.info('Message sent successfully');
-    } catch (error) {
-      const isNetworkError = error instanceof TypeError && error.message.includes('fetch');
-      const errorMessage = isNetworkError ? ERROR_MESSAGES.NETWORK_ERROR : ERROR_MESSAGES.SEND_FAILED;
-      
-      logger.error('Failed to send message', error);
-      toast.error(errorMessage);
-
-      // Implement retry logic
-      if (retryCount < 3) {
-        setRetryCount(prev => prev + 1);
-        logger.info('Retrying message send', { retryCount: retryCount + 1 });
-        setTimeout(handleSendMessage, 1000 * Math.pow(2, retryCount)); // Exponential backoff
-      }
+    } catch (err) {
+      const isNetworkError = err instanceof TypeError;
+      toast.error(isNetworkError ? ERROR_MESSAGES.NETWORK_ERROR : ERROR_MESSAGES.SEND_FAILED);
     } finally {
       setIsSending(false);
     }
-  }, [inputMessage, isLoading, isSending, sendMessage, retryCount]);
+  }, [inputMessage, isLoading, isSending, sendMessage]);
 
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
-    try {
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        handleSendMessage();
+        void handleSendMessage();
       }
-    } catch (error) {
-      logger.error('Error in key press handler', error);
-    }
-  }, [handleSendMessage]);
+    },
+    [handleSendMessage]
+  );
 
   const quickInfoItems = [
-    { icon: Zap, text: 'Smart AI Selection', color: 'text-zynx-purple' },
-    { icon: Globe, text: 'Cultural Intelligence', color: 'text-thai-gold' },
-    { icon: Heart, text: 'Emotional Awareness', color: 'text-pink-500' }
+    { icon: ZapIcon, text: 'Smart AI Selection', color: 'text-purple-600' },
+    { icon: GlobeIcon, text: 'Cultural Intelligence', color: 'text-amber-600' },
+    { icon: HeartIcon, text: 'Emotional Awareness', color: 'text-pink-500' },
   ];
 
   return (
     <ChatErrorBoundary>
       <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <Header 
+        <Header
           title="ZynxAGI"
           subtitle="Universal AI with Cultural Intelligence • น้องดีจ้า"
         />
 
-        {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-6 max-w-7xl mx-auto w-full">
           <div className="space-y-6">
-            <AnimatePresence>
-              {messages.map((message) => (
-                <MessageBubble key={message.id} message={message} />
-              ))}
-            </AnimatePresence>
-            
+            {messages.map((message) => (
+              <MessageBubble key={message.id} message={message} />
+            ))}
             {(isLoading || isSending) && <TypingIndicator />}
             <div ref={messagesEndRef} />
           </div>
         </div>
 
-        {/* Input Area */}
         <div className="border-t bg-white p-6 shadow-lg">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-end space-x-4">
@@ -379,34 +367,33 @@ const ChatInterface: React.FC = () => {
                   ref={textareaRef}
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyDown}
                   placeholder="Type your message... (คุณสามารถพิมพ์เป็นภาษาไทยหรือภาษาอังกฤษได้เลยค่ะ) 💬"
-                  className="w-full resize-none border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-zynx-blue focus:border-transparent transition-all duration-200 thai-text"
+                  className="w-full resize-none border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 thai-text"
                   rows={1}
                   style={{ minHeight: `${MIN_TEXTAREA_HEIGHT}px`, maxHeight: `${MAX_TEXTAREA_HEIGHT}px` }}
                   disabled={isLoading || isSending}
                   aria-label="Message input"
                 />
               </div>
-              
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleSendMessage}
+
+              <button
+                type="button"
+                onClick={() => void handleSendMessage()}
                 disabled={!inputMessage.trim() || isLoading || isSending}
-                className="bg-gradient-to-r from-zynx-blue to-zynx-purple text-white p-3 rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 min-w-[52px] h-[52px] flex items-center justify-center"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 min-w-[52px] h-[52px] flex items-center justify-center"
                 aria-label="Send message"
               >
-                {(isLoading || isSending) ? (
+                {isLoading || isSending ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" role="status">
                     <span className="sr-only">Sending...</span>
                   </div>
                 ) : (
-                  <Send className="w-5 h-5" />
+                  <SendIcon className="w-5 h-5" />
                 )}
-              </motion.button>
+              </button>
             </div>
-            
+
             <QuickInfo items={quickInfoItems} />
           </div>
         </div>
@@ -415,4 +402,4 @@ const ChatInterface: React.FC = () => {
   );
 };
 
-export default memo(ChatInterface); 
+export default memo(ChatInterface);

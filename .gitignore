@@ -36,6 +36,7 @@ ENV/
 .env.local
 .env.*
 !.env.example
+!frontend/.env.example
 
 # API Keys and Secrets
 **/api_keys.json
