@@ -287,11 +287,13 @@ async def cultural_analyze(request: CulturalAnalyzeRequest) -> Dict[str, Any]:
 
 
 def start() -> None:
-    """Start the server."""
+    """Start the server (honours $PORT used by Render / Hugging Face Spaces)."""
+    import os
+
     uvicorn.run(
         "zynx_agi.main:app",
         host="0.0.0.0",
-        port=8000,
+        port=int(os.environ.get("PORT", "8000")),
         reload=settings.DEBUG,
         log_level="info",
     )

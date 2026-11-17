@@ -1,0 +1,32 @@
+# Render Blueprint — ZYNX AGI FastAPI backend on the Render Free plan.
+# Deploy: https://render.com/deploy?repo=https://github.com/zynx-chanont/ZynxAGI-Project
+# Free plan notes: the service sleeps after ~15 min without traffic and
+# takes roughly 30-60 s to wake on the next request.
+services:
+  - type: web
+    name: zynx-agi-api
+    runtime: python
+    plan: free
+    region: singapore
+    branch: main
+    # Lightweight backend dependencies only (root requirements.txt pulls in
+    # torch/transformers, which do not fit the free instance).
+    buildCommand: pip install --upgrade pip && pip install -r zynx_agi/requirements.txt
+    startCommand: uvicorn zynx_agi.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DEBUG
+        value: "false"
+      - key: ALLOWED_ORIGINS
+        value: https://zynx-agi.netlify.app,https://zynxdata.com,https://www.zynxdata.com
+      - key: SECRET_KEY
+        generateValue: true
+      # Optional AI provider. Leave unset to run in clearly-labelled mock mode.
+      # Free option: create a Gemini key at https://aistudio.google.com/apikey
+      - key: AI_PROVIDER
+        value: google
+      - key: GOOGLE_API_KEY
+        sync: false
