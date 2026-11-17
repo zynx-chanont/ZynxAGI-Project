@@ -1,13 +1,19 @@
-# Netlify Build Configuration for ZYNX AGI Frontend
+# Netlify Build Configuration for ZYNX AGI Frontend + Built-in Serverless API
 # Note: Do not install or enable netlify-plugin-visual-diff (Applitools) unless
 # APPLITOOLS_API_KEY is explicitly configured in Netlify environment variables.
 # If visual diff testing is not required, disable the plugin in:
 # Netlify UI -> Site configuration -> Build & deploy -> Build plugins.
 
+"$schema" = "https://open-api.netlify.com/netlify.schema.json"
+
 [build]
   base = "frontend"
   command = "npm run build"
   publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/*"

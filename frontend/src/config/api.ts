@@ -17,7 +17,8 @@ export function getRawConfiguredApiUrl(): string {
 }
 
 export function isApiConfigured(): boolean {
-  return Boolean(getRawConfiguredApiUrl() || import.meta.env.DEV);
+  // Production uses same-origin Netlify Serverless Functions (/api/v1/*) when VITE_API_URL is unset
+  return true;
 }
 
 export function getApiBaseUrl(): string {
@@ -33,13 +34,8 @@ export function getApiBaseUrl(): string {
 
 export function buildApiUrl(path: string): string {
   const baseUrl = getApiBaseUrl();
-  if (!baseUrl) {
-    throw new Error(
-      'Backend API URL is not configured (VITE_API_URL). Please configure VITE_API_URL in your deployment environment.'
-    );
-  }
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${baseUrl}${normalizedPath}`;
+  return baseUrl ? `${baseUrl}${normalizedPath}` : normalizedPath;
 }
 
 export async function fetchWithTimeout(
