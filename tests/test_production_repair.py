@@ -270,6 +270,64 @@ class TestAIProviderGateway:
         assert result.message == "Hello from Gemini"
 
     @pytest.mark.asyncio
+    async def test_google_retired_model_404_discovers_replacement(self):
+        secret_key = "AIzaTestGoogleSecretKey"
+        cfg = Settings(AI_PROVIDER="google", AI_API_KEY=secret_key, GOOGLE_MODEL="gemini-old-flash")
+        gateway = AIProviderGateway(cfg)
+        calls = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            calls.append((request.method, request.url.path))
+            assert secret_key not in str(request.url)
+            if request.method == "GET" and request.url.path.endswith("/models"):
+                return httpx.Response(200, json={"models": [
+                    {"name": "models/text-embedding-004", "supportedGenerationMethods": ["embedContent"]},
+                    {"name": "models/gemini-9.0-flash-lite", "supportedGenerationMethods": ["generateContent"]},
+                    {"name": "models/gemini-9.0-flash-preview", "supportedGenerationMethods": ["generateContent"]},
+                    {"name": "models/gemini-8.5-flash", "supportedGenerationMethods": ["generateContent"]},
+                    {"name": "models/gemini-9.0-pro", "supportedGenerationMethods": ["generateContent"]},
+                ]})
+            if "gemini-old-flash" in request.url.path:
+                return httpx.Response(404, json={"error": {"code": 404}})
+            assert "gemini-8.5-flash:generateContent" in request.url.path
+            return httpx.Response(200, json={
+                "candidates": [{"content": {"parts": [{"text": "Hi from new model"}]}}],
+            })
+
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+            result = await gateway.generate(
+                message="Hello", cultural_context={}, is_thai=False, http_client=http_client,
+            )
+            assert result.mode == "live" and result.is_mock is False
+            assert result.model == "gemini-8.5-flash"
+            assert result.message == "Hi from new model"
+
+            # Second call uses the cached replacement directly (no 404, no discovery).
+            calls.clear()
+            again = await gateway.generate(
+                message="Hello", cultural_context={}, is_thai=False, http_client=http_client,
+            )
+            assert again.mode == "live"
+            assert calls == [("POST", "/v1beta/models/gemini-8.5-flash:generateContent")]
+
+    @pytest.mark.asyncio
+    async def test_google_404_without_replacement_falls_back(self):
+        cfg = Settings(AI_PROVIDER="google", AI_API_KEY="AIzaTestKey")
+        gateway = AIProviderGateway(cfg)
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            if request.method == "GET":
+                return httpx.Response(200, json={"models": []})
+            return httpx.Response(404, json={})
+
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+            result = await gateway.generate(
+                message="Hello", cultural_context={}, is_thai=False, http_client=http_client,
+            )
+        assert result.mode == "fallback" and result.is_mock is True
+        assert "404" in (result.error or "")
+
+    @pytest.mark.asyncio
     async def test_upstream_failure_triggers_safe_fallback_without_key_leak(self):
         secret_key = "sk-do-not-leak-me"
         cfg = Settings(AI_PROVIDER="openai", AI_API_KEY=secret_key)
