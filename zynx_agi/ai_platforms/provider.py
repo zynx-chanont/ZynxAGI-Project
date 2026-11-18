@@ -8,6 +8,7 @@ mock/fallback mode when credentials are absent or upstream calls fail.
 
 from dataclasses import dataclass, field
 import logging
+import re
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -26,6 +27,8 @@ _PLACEHOLDER_KEYS = {
 }
 
 _SUPPORTED_PROVIDERS = {"openai", "anthropic", "google", "mock", "auto"}
+
+_GOOGLE_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 
 
 def _is_valid_secret(value: Optional[str]) -> bool:
@@ -81,6 +84,50 @@ class AIProviderGateway:
 
     def __init__(self, app_settings: Optional[Settings] = None) -> None:
         self.settings = app_settings or default_settings
+        # Set when the configured Gemini model 404s and a replacement is discovered.
+        self._google_model_override: Optional[str] = None
+
+    @staticmethod
+    async def _discover_google_model(
+        client: httpx.AsyncClient, api_key: str, exclude: str
+    ) -> Optional[str]:
+        """Pick a generateContent-capable Gemini model available to this key.
+
+        Preference: stable (non-preview/exp) "flash" models, newest version first,
+        excluding "lite"/"live"/"image"/"tts" variants where possible.
+        """
+        try:
+            response = await client.get(
+                f"{_GOOGLE_API_BASE}/models",
+                headers={"x-goog-api-key": api_key},
+                params={"pageSize": 1000},
+            )
+            response.raise_for_status()
+            models = response.json().get("models") or []
+        except (httpx.HTTPError, ValueError) as exc:
+            logger.warning("Gemini model discovery failed: %s", type(exc).__name__)
+            return None
+
+        candidates: List[str] = []
+        for item in models:
+            if not isinstance(item, dict):
+                continue
+            methods = item.get("supportedGenerationMethods") or []
+            name = str(item.get("name", "")).removeprefix("models/")
+            if "generateContent" in methods and name and name != exclude and "gemini" in name:
+                candidates.append(name)
+        if not candidates:
+            return None
+
+        def _rank(name: str):
+            lowered = name.lower()
+            unstable = any(tag in lowered for tag in ("preview", "exp", "latest"))
+            special = any(tag in lowered for tag in ("lite", "live", "image", "tts", "audio", "embedding", "thinking"))
+            is_flash = "flash" in lowered
+            version = [int(n) for n in re.findall(r"\d+", lowered)[:2]]
+            return (not is_flash, special, unstable, [-v for v in version], lowered)
+
+        return sorted(candidates, key=_rank)[0]
 
     def resolve_configuration(
         self, requested_model: Optional[str] = None
@@ -372,17 +419,38 @@ class AIProviderGateway:
             for item in history
         ]
         contents.append({"role": "user", "parts": [{"text": message}]})
+        headers = {
+            "x-goog-api-key": config.api_key or "",
+            "Content-Type": "application/json",
+        }
+        body = {
+            "systemInstruction": {"parts": [{"text": system_prompt}]},
+            "contents": contents,
+        }
+
+        model = self._google_model_override or config.model
         response = await client.post(
-            f"https://generativelanguage.googleapis.com/v1beta/models/{config.model}:generateContent",
-            headers={
-                "x-goog-api-key": config.api_key or "",
-                "Content-Type": "application/json",
-            },
-            json={
-                "systemInstruction": {"parts": [{"text": system_prompt}]},
-                "contents": contents,
-            },
+            f"{_GOOGLE_API_BASE}/models/{model}:generateContent",
+            headers=headers,
+            json=body,
         )
+        if response.status_code == 404:
+            # Configured model was retired or is unavailable for this key:
+            # discover a supported model once, cache it, and retry.
+            discovered = await self._discover_google_model(client, config.api_key or "", exclude=model)
+            if discovered:
+                logger.warning(
+                    "Gemini model '%s' not found; switching to discovered model '%s'",
+                    model,
+                    discovered,
+                )
+                self._google_model_override = discovered
+                model = discovered
+                response = await client.post(
+                    f"{_GOOGLE_API_BASE}/models/{model}:generateContent",
+                    headers=headers,
+                    json=body,
+                )
         response.raise_for_status()
         payload = response.json()
         candidates = payload.get("candidates") or []
@@ -398,7 +466,7 @@ class AIProviderGateway:
         return AIProviderResult(
             message=text,
             provider="google",
-            model=config.model,
+            model=model,
             mode="live",
             is_mock=False,
             usage={
