@@ -40,7 +40,17 @@ class StorageDriver(ABC):
     def __init__(self, base_path: str, encryption_key: Optional[str] = None):
         self.base_path = Path(base_path)
         self.base_path.mkdir(parents=True, exist_ok=True)
-        self.fernet = Fernet(encryption_key.encode()) if encryption_key else None
+        if encryption_key:
+            key_bytes = encryption_key.encode() if isinstance(encryption_key, str) else encryption_key
+            try:
+                self.fernet = Fernet(key_bytes)
+            except Exception as exc:
+                raise ValueError(
+                    f"Invalid encryption_key for StorageDriver: {exc}. "
+                    "Key must be 32 url-safe base64-encoded bytes."
+                )
+        else:
+            self.fernet = None
     
     @abstractmethod
     async def store_artifact(self, artifact_id: str, data: bytes, metadata: Dict[str, Any]) -> str:
