@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 30% 98%;
+    --foreground: 220 20% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 12%;
+
+    --primary: 258 86% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 190 96% 56%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 20% 12%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 258 86% 95%;
+    --accent-foreground: 258 86% 30%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 258 86% 60%;
+
+    --radius: 1rem;
+
+    --bubble-user: 258 86% 60%;
+    --bubble-user-foreground: 0 0% 100%;
+    --bubble-assistant: 0 0% 100%;
+    --bubble-assistant-foreground: 220 20% 12%;
+
+    /* System gradient: Purple -> Blue -> Cyan */
+    --gradient-brand: linear-gradient(135deg, hsl(270 85% 60%), hsl(220 90% 58%) 50%, hsl(190 96% 56%));
+    /* Persona gradient: Orange -> Green -> Gold (Deeja avatar/CTA) */
+    --gradient-persona: linear-gradient(135deg, hsl(22 95% 58%), hsl(145 65% 48%) 55%, hsl(45 95% 58%));
+    --gradient-bg: radial-gradient(1200px 600px at 10% -10%, hsl(258 86% 92% / 0.55), transparent 60%),
+                   radial-gradient(900px 500px at 100% 0%, hsl(190 96% 90% / 0.5), transparent 60%);
+    --shadow-soft: 0 4px 24px -8px hsl(220 30% 20% / 0.08);
+    --shadow-glow: 0 8px 32px -8px hsl(258 86% 60% / 0.4);
+    --shadow-persona: 0 8px 32px -8px hsl(22 95% 58% / 0.45);
+  }
+
+  .dark {
+    --background: 220 25% 7%;
+    --foreground: 220 15% 95%;
+
+    --card: 220 22% 10%;
+    --card-foreground: 220 15% 95%;
+
+    --popover: 220 22% 10%;
+    --popover-foreground: 220 15% 95%;
+
+    --primary: 270 90% 70%;
+    --primary-foreground: 220 25% 7%;
+    --primary-glow: 190 96% 60%;
+
+    --secondary: 220 18% 14%;
+    --secondary-foreground: 220 15% 95%;
+
+    --muted: 220 18% 14%;
+    --muted-foreground: 220 10% 65%;
+
+    --accent: 258 70% 22%;
+    --accent-foreground: 258 90% 88%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 18% 18%;
+    --input: 220 18% 18%;
+    --ring: 270 90% 70%;
+
+    --bubble-user: 270 85% 62%;
+    --bubble-user-foreground: 0 0% 100%;
+    --bubble-assistant: 220 22% 12%;
+    --bubble-assistant-foreground: 220 15% 95%;
+
+    --gradient-brand: linear-gradient(135deg, hsl(270 90% 65%), hsl(220 90% 60%) 50%, hsl(190 96% 60%));
+    --gradient-persona: linear-gradient(135deg, hsl(22 95% 60%), hsl(145 60% 50%) 55%, hsl(45 95% 60%));
+    --gradient-bg: radial-gradient(1200px 600px at 10% -10%, hsl(270 70% 20% / 0.45), transparent 60%),
+                   radial-gradient(900px 500px at 100% 0%, hsl(190 70% 18% / 0.35), transparent 60%);
+    --shadow-soft: 0 4px 24px -8px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 8px 32px -8px hsl(270 90% 65% / 0.45);
+    --shadow-persona: 0 8px 32px -8px hsl(22 95% 60% / 0.5);
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    background-image: var(--gradient-bg);
+    background-attachment: fixed;
+    font-feature-settings: "ss01", "cv11";
+  }
+}
+
+@layer utilities {
+  .bg-gradient-brand { background: var(--gradient-brand); }
+  .bg-gradient-persona { background: var(--gradient-persona); }
+  .text-gradient-brand {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-persona {
+    background: var(--gradient-persona);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .ring-gradient-persona {
+    background: var(--gradient-persona);
+    padding: 2px;
+    border-radius: 9999px;
+  }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-persona { box-shadow: var(--shadow-persona); }
+
+  .blink-caret::after {
+    content: "▍";
+    margin-left: 2px;
+    animation: blink 1s steps(2, start) infinite;
+    color: hsl(var(--primary));
+  }
+  @keyframes blink {
+    to { visibility: hidden; }
+  }
+
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+:root {
+  --home-bg: #f5f5f4;
+  --home-surface: #ffffff;
+  --home-surface-muted: #fafaf9;
+  --home-text: #1c1917;
+  --home-text-muted: #57534e;
+  --home-border: #e7e5e4;
+  --home-primary: #292524;
+  --home-primary-hover: #1c1917;
+  --home-primary-fg: #fafaf9;
+  --home-radius: 14px;
+  --home-shadow: 0 16px 40px rgba(28, 25, 23, 0.06);
+}
+.home-shell { background: radial-gradient(circle at 10% 5%, #ffffff 0%, var(--home-bg) 55%, #f0efec 100%); color: var(--home-text); }
+.home-bg-pattern { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(to right, rgba(28, 25, 23, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(28, 25, 23, 0.04) 1px, transparent 1px); background-size: 42px 42px; mask-image: radial-gradient(circle at center, black 45%, transparent 90%); }
+.home-container { width: 100%; max-width: 1200px; margin: 0 auto; }
+.home-header { border-bottom: 1px solid var(--home-border); background: color-mix(in oklab, var(--home-surface) 80%, transparent); backdrop-filter: blur(8px); }
+.home-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.home-panel, .home-card { background: var(--home-surface); border: 1px solid var(--home-border); border-radius: var(--home-radius); box-shadow: var(--home-shadow); }
+.home-title { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.01em; color: var(--home-text); }
+.home-subtitle { font-size: 0.75rem; color: var(--home-text-muted); }
+.home-heading { font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 650; letter-spacing: -0.02em; color: var(--home-text); }
+.home-copy { font-size: 0.95rem; line-height: 1.6; color: var(--home-text-muted); }
+.home-bubble-user { background: #292524; color: #fafaf9; }
+.home-bubble-ai { background: var(--home-surface-muted); color: var(--home-text); border: 1px solid var(--home-border); }
+.home-btn-primary { background: var(--home-primary); color: var(--home-primary-fg); border-radius: 10px; }
+.home-btn-primary:hover { background: var(--home-primary-hover); }
+.home-btn-secondary { border-color: var(--home-border); color: var(--home-text); background: var(--home-surface); }
+.home-btn-secondary:hover { background: var(--home-surface-muted); }
+.home-input { background: var(--home-surface); border-color: var(--home-border); color: var(--home-text); }
+.home-input::placeholder { color: color-mix(in oklab, var(--home-text-muted) 70%, white); }
+.home-input:focus-visible { border-color: #78716c; box-shadow: 0 0 0 3px rgba(120, 113, 108, 0.16); }
+.home-score-box { padding: 1rem; border-radius: 12px; border: 1px solid var(--home-border); background: linear-gradient(180deg, #ffffff 0%, #f5f5f4 100%); }
+@media (min-width: 1024px) { .home-grid { grid-template-columns: minmax(0, 1fr) 360px; align-items: start; gap: 1.5rem; } }
