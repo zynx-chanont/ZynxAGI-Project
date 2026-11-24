@@ -96,7 +96,14 @@ app.add_middleware(
 
 
 def register_routers() -> None:
-    """Register optional modular API routers if dependencies are installed."""
+    """Register API routers for Core-Gateway adapter and optional services."""
+    try:
+        from .api.adapter import router as adapter_router
+        app.include_router(adapter_router)
+        logger.info("Gateway-to-Core Adapter router registered successfully")
+    except Exception as exc:
+        logger.error("Failed to register Adapter router: %s", exc)
+
     try:
         from .api.chat import router as chat_router
         from .api.cultural import router as cultural_router
@@ -105,7 +112,7 @@ def register_routers() -> None:
         app.include_router(chat_router)
         app.include_router(cultural_router)
         app.include_router(metadata_router)
-        logger.info("API routers registered successfully")
+        logger.info("Optional API routers registered successfully")
     except Exception as exc:
         logger.warning("Some optional API routers could not be registered: %s", exc)
 
@@ -164,51 +171,8 @@ def _analyze_message_culture(text: str) -> tuple[bool, Dict[str, Any]]:
 
 
 
-# ─── Service-to-Service Authentication Dependency (Gate 2) ───────────────────
-http_bearer = HTTPBearer(auto_error=False)
-
-
-def verify_service_token(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
-) -> str:
-    """
-    Validate internal service token for Service-to-Service communication.
-    Accepts ZYNX_INTERNAL_SERVICE_TOKEN or ZYNX_SERVICE_TOKEN.
-    In development mode (DEBUG=True and no token configured), permits access with debug log.
-    In production mode (DEBUG=False or token configured), strictly rejects missing or invalid tokens.
-    """
-    configured_token = (
-        getattr(settings, "ZYNX_INTERNAL_SERVICE_TOKEN", None)
-        or os.getenv("ZYNX_INTERNAL_SERVICE_TOKEN")
-        or getattr(settings, "ZYNX_SERVICE_TOKEN", None)
-        or os.getenv("ZYNX_SERVICE_TOKEN")
-    )
-
-    if not configured_token:
-        if settings.DEBUG:
-            logger.debug("ZYNX_SERVICE_TOKEN not configured; permitting call in DEBUG mode")
-            return "dev-unauthenticated"
-        raise HTTPException(
-            status_code=500,
-            detail="Server security configuration error: ZYNX_SERVICE_TOKEN not configured in production",
-        )
-
-    if not credentials or not credentials.credentials:
-        raise HTTPException(
-            status_code=401,
-            detail="Missing Authorization header or Bearer token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    # Constant-time comparison to prevent timing attacks
-    if not hmac.compare_digest(credentials.credentials.strip(), configured_token.strip()):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid service token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    return credentials.credentials
+# ─── Service-to-Service Authentication Dependency (Gate 2/3) ──────────────────
+from .security.auth import http_bearer, verify_service_token
 
 
 @app.get("/")
