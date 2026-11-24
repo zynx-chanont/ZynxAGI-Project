@@ -119,6 +119,17 @@ def register_routers() -> None:
 
 register_routers()
 
+# ─── Gate 4: Cryptographic Schema Lock & Database Boundary Freeze ─────────────
+try:
+    from .core.schema_lock import register_standard_schemas
+    from .core.database_boundary import enforce_database_freeze, DatabaseBoundaryPolicy
+
+    register_standard_schemas()
+    enforce_database_freeze()
+    logger.info("Gate 4: Schema locks and database boundary freeze initialized successfully")
+except Exception as exc:
+    logger.warning("Gate 4: Schema locks or database boundary could not be initialized: %s", exc)
+
 
 async def _safe_observe_interaction(
     agent_name: str,
@@ -324,3 +335,11 @@ def start() -> None:
 
 if __name__ == "__main__":
     start()
+
+
+@app.get("/api/v1/database/boundaries")
+async def get_database_boundaries(
+    _token: str = Depends(verify_service_token),
+) -> Dict[str, Any]:
+    """Return the Gate 4 frozen Supabase database boundary manifest."""
+    return DatabaseBoundaryPolicy.get_boundary_manifest()
