@@ -3,7 +3,10 @@ import logging
 import time
 from typing import Any, Dict, List, Literal, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import hmac
+import os
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 import uvicorn
@@ -160,6 +163,54 @@ def _analyze_message_culture(text: str) -> tuple[bool, Dict[str, Any]]:
     }
 
 
+
+# ─── Service-to-Service Authentication Dependency (Gate 2) ───────────────────
+http_bearer = HTTPBearer(auto_error=False)
+
+
+def verify_service_token(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
+) -> str:
+    """
+    Validate internal service token for Service-to-Service communication.
+    Accepts ZYNX_INTERNAL_SERVICE_TOKEN or ZYNX_SERVICE_TOKEN.
+    In development mode (DEBUG=True and no token configured), permits access with debug log.
+    In production mode (DEBUG=False or token configured), strictly rejects missing or invalid tokens.
+    """
+    configured_token = (
+        getattr(settings, "ZYNX_INTERNAL_SERVICE_TOKEN", None)
+        or os.getenv("ZYNX_INTERNAL_SERVICE_TOKEN")
+        or getattr(settings, "ZYNX_SERVICE_TOKEN", None)
+        or os.getenv("ZYNX_SERVICE_TOKEN")
+    )
+
+    if not configured_token:
+        if settings.DEBUG:
+            logger.debug("ZYNX_SERVICE_TOKEN not configured; permitting call in DEBUG mode")
+            return "dev-unauthenticated"
+        raise HTTPException(
+            status_code=500,
+            detail="Server security configuration error: ZYNX_SERVICE_TOKEN not configured in production",
+        )
+
+    if not credentials or not credentials.credentials:
+        raise HTTPException(
+            status_code=401,
+            detail="Missing Authorization header or Bearer token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Constant-time comparison to prevent timing attacks
+    if not hmac.compare_digest(credentials.credentials.strip(), configured_token.strip()):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid service token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return credentials.credentials
+
+
 @app.get("/")
 async def root() -> Dict[str, Any]:
     """Root endpoint."""
@@ -205,13 +256,18 @@ async def health_check() -> Dict[str, Any]:
 
 
 @app.get("/api/v1/health")
-async def api_v1_health_check() -> Dict[str, Any]:
+async def api_v1_health_check(
+    _token: str = Depends(verify_service_token),
+) -> Dict[str, Any]:
     """Versioned health check endpoint for frontend clients."""
     return _build_health_payload()
 
 
 @app.post("/api/v1/chat/message", response_model=ChatMessageResponse)
-async def chat_message(request: ChatMessageRequest) -> ChatMessageResponse:
+async def chat_message(
+    request: ChatMessageRequest,
+    _token: str = Depends(verify_service_token),
+) -> ChatMessageResponse:
     """Process a chat message through Cultural Engine and AIProviderGateway."""
     start_ts = time.perf_counter()
 
@@ -264,7 +320,10 @@ async def chat_message(request: ChatMessageRequest) -> ChatMessageResponse:
 
 
 @app.post("/api/v1/cultural/analyze")
-async def cultural_analyze(request: CulturalAnalyzeRequest) -> Dict[str, Any]:
+async def cultural_analyze(
+    request: CulturalAnalyzeRequest,
+    _token: str = Depends(verify_service_token),
+) -> Dict[str, Any]:
     """Cultural analysis endpoint."""
     try:
         is_thai, cultural_context = _analyze_message_culture(request.text)
