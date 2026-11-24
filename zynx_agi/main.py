@@ -187,6 +187,7 @@ from .security.auth import http_bearer, verify_service_token
 
 
 @app.get("/")
+@app.head("/")
 async def root() -> Dict[str, Any]:
     """Root endpoint."""
     provider_cfg = ai_gateway.resolve_configuration()
@@ -225,16 +226,16 @@ def _build_health_payload() -> Dict[str, Any]:
 
 
 @app.get("/health")
+@app.head("/health")
 async def health_check() -> Dict[str, Any]:
     """Health check endpoint."""
     return _build_health_payload()
 
 
 @app.get("/api/v1/health")
-async def api_v1_health_check(
-    _token: str = Depends(verify_service_token),
-) -> Dict[str, Any]:
-    """Versioned health check endpoint for frontend clients."""
+@app.head("/api/v1/health")
+async def api_v1_health_check() -> Dict[str, Any]:
+    """Versioned health check endpoint for frontend clients and cloud health monitors."""
     return _build_health_payload()
 
 
