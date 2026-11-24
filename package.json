@@ -8,7 +8,11 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "dev:chat": "npm --prefix apps/deeja-chat run dev",
+    "dev:gateway": "npm --prefix apps/gateway run dev:backend",
+    "build:chat": "npm --prefix apps/deeja-chat run build",
+    "build:gateway": "npm --prefix apps/gateway run build"
   },
   "devDependencies": {
     "turbo": "latest"

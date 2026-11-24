@@ -70,7 +70,9 @@ const FOLLOWUPS = [
   "เปรียบเทียบทางเลือกอื่น",
 ];
 
-const FN_URL = `/functions/v1/chat`;
+const CORE_URL = (import.meta.env.VITE_ZYNX_API_URL || import.meta.env.VITE_CORE_API_URL || "https://zynx-agi-api.onrender.com").replace(/\/$/, "");
+const SERVICE_TOKEN = import.meta.env.VITE_ZYNX_SERVICE_TOKEN || "2703f2d6c7101f03c91977f3a2fc6107";
+const FN_URL = import.meta.env.VITE_CHAT_ENDPOINT || `${CORE_URL}/agents/deeja/invoke`;
 const LANDING_URL = "https://deeja-landing.vercel.app";
 
 const ChatBubble = ({ m, streaming }: { m: Message; streaming?: boolean }) => {
@@ -143,13 +145,30 @@ const Index = () => {
     abortRef.current = ctrl;
 
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (SERVICE_TOKEN) {
+        headers["Authorization"] = `Bearer ${SERVICE_TOKEN}`;
+      }
+
+      const isAgentInvoke = FN_URL.includes("/agents/");
+      const bodyPayload = isAgentInvoke
+        ? {
+            input: {
+              message: text,
+              mode,
+              history: next.map(({ role, content }) => ({ role, content })),
+            },
+            sessionId: "deeja-chat-session",
+          }
+        : {
+            mode,
+            messages: next.map(({ role, content }) => ({ role, content })),
+          };
+
       const resp = await fetch(FN_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode,
-          messages: next.map(({ role, content }) => ({ role, content })),
-        }),
+        headers,
+        body: JSON.stringify(bodyPayload),
         signal: ctrl.signal,
       });
 
@@ -161,33 +180,44 @@ const Index = () => {
         return;
       }
 
-      const reader = resp.body!.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
-      let acc = "";
+      const contentType = resp.headers.get("content-type") || "";
+      if (contentType.includes("application/json") || contentType.includes("problem+json")) {
+        const json = await resp.json();
+        const reply = json.output?.message || json.message || json.content || (json.detail ? `Error: ${json.detail}` : "");
+        if (reply) {
+          setMessages((m) =>
+            m.map((x) => (x.id === assistantMsg.id ? { ...x, content: reply } : x))
+          );
+        }
+      } else {
+        const reader = resp.body!.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        let acc = "";
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        const lines = buf.split("\n");
-        buf = lines.pop() || "";
-        for (const line of lines) {
-          const t = line.trim();
-          if (!t.startsWith("data:")) continue;
-          const data = t.slice(5).trim();
-          if (data === "[DONE]") continue;
-          try {
-            const json = JSON.parse(data);
-            const delta = json.choices?.[0]?.delta?.content;
-            if (delta) {
-              acc += delta;
-              setMessages((m) =>
-                m.map((x) => (x.id === assistantMsg.id ? { ...x, content: acc } : x))
-              );
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          const lines = buf.split("\n");
+          buf = lines.pop() || "";
+          for (const line of lines) {
+            const t = line.trim();
+            if (!t.startsWith("data:")) continue;
+            const data = t.slice(5).trim();
+            if (data === "[DONE]") continue;
+            try {
+              const json = JSON.parse(data);
+              const delta = json.choices?.[0]?.delta?.content;
+              if (delta) {
+                acc += delta;
+                setMessages((m) =>
+                  m.map((x) => (x.id === assistantMsg.id ? { ...x, content: acc } : x))
+                );
+              }
+            } catch {
+              /* ignore */
             }
-          } catch {
-            /* ignore */
           }
         }
       }
