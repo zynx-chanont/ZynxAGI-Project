@@ -89,6 +89,8 @@ class Settings(BaseSettings):
     # Security Settings
     SECRET_KEY: str = "zynx-agi-secret-key-development"  # Override in production via env
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    STORAGE_ENCRYPTION_KEY: Optional[str] = None
+    ZYNX_INTERNAL_SERVICE_TOKEN: Optional[str] = None
 
     # Cultural Intelligence
     CULTURAL_INTELLIGENCE_MODEL: str = "deeja-v1"
@@ -108,13 +110,41 @@ class Settings(BaseSettings):
         return parse_allowed_origins(value)
 
     @model_validator(mode="after")
-    def _validate_cors_security(self) -> "Settings":
+    def _validate_security_and_cors(self) -> "Settings":
+        # CORS validation
         origins = parse_allowed_origins(self.ALLOWED_ORIGINS)
         if not self.DEBUG and "*" in origins:
             raise ValueError(
                 "Wildcard '*' is not permitted in ALLOWED_ORIGINS when DEBUG=False"
             )
         self.ALLOWED_ORIGINS = origins
+
+        # Insecure fallback validation when DEBUG=False
+        insecure_fallbacks = {
+            "zynx-agi-secret-key-development",
+            "your-secret-key",
+            "your-super-secret-key-change-in-production",
+            "secret",
+            "changeme",
+        }
+        if not self.DEBUG:
+            if not self.SECRET_KEY or self.SECRET_KEY.strip() in insecure_fallbacks:
+                raise ValueError(
+                    "SECRET_KEY must be overridden with a secure production secret when DEBUG=False"
+                )
+
+        # STORAGE_ENCRYPTION_KEY format validation
+        if self.STORAGE_ENCRYPTION_KEY:
+            import base64
+            try:
+                dec = base64.urlsafe_b64decode(self.STORAGE_ENCRYPTION_KEY.encode())
+                if len(dec) != 32:
+                    raise ValueError("STORAGE_ENCRYPTION_KEY must decode to exactly 32 bytes")
+            except Exception as exc:
+                raise ValueError(
+                    f"STORAGE_ENCRYPTION_KEY must be 32 url-safe base64-encoded bytes: {exc}"
+                )
+
         return self
 
     @property
