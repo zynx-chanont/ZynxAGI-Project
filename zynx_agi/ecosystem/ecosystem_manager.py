@@ -105,7 +105,7 @@ class EcosystemManager:
         # Setup storage driver based on deployment mode
         if self.deployment_mode in ["local", "hybrid"]:
             storage_path = self.config.get("storage_path", "./storage")
-            encryption_key = self.config.get("encryption_key", settings.SECRET_KEY)
+            encryption_key = self.config.get("encryption_key", getattr(settings, "STORAGE_ENCRYPTION_KEY", None))
             
             self.storage_driver = LocalStorageDriver(
                 base_path=storage_path,
