@@ -20,14 +20,23 @@ import json
 
 load_dotenv()
 
+# Centralized settings import
+from zynx_agi.config.settings import settings
+
 # Encryption key
-ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY", Fernet.generate_key())
+_raw_enc_key = os.getenv("ENCRYPTION_KEY")
+if _raw_enc_key:
+    ENCRYPTION_KEY = _raw_enc_key.encode() if isinstance(_raw_enc_key, str) else _raw_enc_key
+else:
+    # Ephemeral key fallback for local testing/dev
+    ENCRYPTION_KEY = Fernet.generate_key()
+
 fernet = Fernet(ENCRYPTION_KEY)
 
-# JWT settings
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# JWT settings (aligned with centralized settings)
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
